@@ -1,38 +1,259 @@
-.loa-minimal.sheet .sheet-header {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 16px;
+.loa-system.sheet.actor {
+  background: transparent;
+  box-shadow: none;
 }
 
-.loa-minimal.sheet .profile-img {
-  width: 72px;
-  height: 72px;
-  object-fit: cover;
-  border: 1px solid #555;
+.loa-system.sheet.actor .window-content {
+  padding: 0;
+  background:
+    radial-gradient(circle at top left, rgba(219, 87, 22, 0.25), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(75, 31, 120, 0.25), transparent 35%),
+    linear-gradient(135deg, #17100d, #08090d 70%);
+  color: #f4e6d0;
+  overflow: hidden;
 }
 
-.loa-minimal.sheet input {
-  width: 100%;
+.loa-character-sheet {
+  height: 100%;
 }
 
-.loa-minimal.sheet .resources,
-.loa-minimal.sheet .attributes {
+.loa-shell {
   display: grid;
-  gap: 8px;
-  margin-bottom: 16px;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent),
+    rgba(12, 10, 10, 0.82);
 }
 
-.loa-minimal.sheet .resource-row {
+.loa-sidebar {
+  padding: 24px 18px;
+  background:
+    linear-gradient(180deg, rgba(219, 87, 22, 0.18), transparent 45%),
+    rgba(0, 0, 0, 0.35);
+  border-right: 1px solid rgba(255, 190, 130, 0.18);
+}
+
+.loa-portrait-wrap {
+  width: 184px;
+  height: 184px;
+  margin: 0 auto 18px;
+  padding: 5px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, #db5716, #7c2dff, #1d1d24);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.loa-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  border-radius: 23px;
+}
+
+.loa-name {
+  width: 100%;
+  font-size: 24px;
+  text-align: center;
+  color: #ffe9ce;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 190, 130, 0.22);
+  border-radius: 14px;
+  padding: 8px;
+}
+
+.loa-subtitle {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 0 22px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #c9a78a;
+  letter-spacing: 0.08em;
+}
+
+.loa-tabs {
+  display: grid;
+  gap: 10px;
+}
+
+.loa-tabs .item {
+  color: #e7c9aa;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.loa-tabs .item:hover {
+  transform: translateX(4px);
+  background: rgba(219, 87, 22, 0.18);
+}
+
+.loa-tabs .item.active {
+  color: #fff3e2;
+  background:
+    linear-gradient(135deg, rgba(219, 87, 22, 0.75), rgba(124, 45, 255, 0.38));
+  border-color: rgba(255, 210, 160, 0.35);
+  box-shadow: 0 12px 32px rgba(219, 87, 22, 0.18);
+}
+
+.loa-content {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.loa-content .tab {
+  display: none;
+}
+
+.loa-content .tab.active {
+  display: block;
+  animation: loaFadeIn 180ms ease-out;
+}
+
+.loa-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 18px;
+}
+
+.loa-card {
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 220, 170, 0.13);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.loa-card-wide {
+  grid-column: span 2;
+}
+
+.loa-card h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+  color: #ffd7aa;
+  letter-spacing: 0.03em;
+}
+
+.loa-resource {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  align-items: center;
+  gap: 14px;
+  margin: 10px 0;
+}
+
+.loa-resource label {
+  color: #e8c4a0;
+  font-weight: 600;
+}
+
+.loa-resource div {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 6px;
   align-items: center;
 }
 
-.loa-minimal.sheet .attribute-row {
-  display: grid;
-  grid-template-columns: 80px 1fr;
+.loa-system.sheet input,
+.loa-system.sheet textarea {
+  color: #fff1df;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 210, 160, 0.18);
+  border-radius: 12px;
+  padding: 7px 9px;
+}
+
+.loa-system.sheet textarea {
+  min-height: 340px;
+  resize: vertical;
+}
+
+.loa-bar {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.loa-bar div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7c1f1f, #db5716, #ffd08a);
+  box-shadow: 0 0 18px rgba(219, 87, 22, 0.55);
+}
+
+.loa-bar-magic div {
+  background: linear-gradient(90deg, #34216b, #7c2dff, #b99cff);
+  box-shadow: 0 0 18px rgba(124, 45, 255, 0.55);
+}
+
+.loa-pill-row {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
+}
+
+.loa-pill {
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #ffe5c7;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 210, 160, 0.16);
+  font-size: 12px;
+}
+
+.loa-pill.danger {
+  background: rgba(219, 87, 22, 0.18);
+  border-color: rgba(219, 87, 22, 0.45);
+}
+
+.loa-attributes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.loa-attr {
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.loa-attr label {
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #d7aa81;
+  letter-spacing: 0.08em;
+}
+
+.loa-muted {
+  color: #c7ad94;
+}
+
+@keyframes loaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
