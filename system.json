@@ -1,0 +1,31 @@
+{
+  "id": "loa-system",
+  "title": "LoA System",
+  "description": "Minimal Foundry VTT system for Legends of Arxanum.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Tom Biebl",
+      "url": "https://github.com/tom-biebl"
+    }
+  ],
+  "url": "https://github.com/tom-biebl/loa-system",
+  "manifest": "https://github.com/tom-biebl/loa-system/releases/latest/download/system.json",
+  "download": "https://github.com/tom-biebl/loa-system/releases/latest/download/loa-system.zip",
+  "esmodules": [
+    "scripts/loa-system.mjs"
+  ],
+  "styles": [
+    "styles/loa-system.css"
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {},
+      "npc": {}
+    }
+  }
+}

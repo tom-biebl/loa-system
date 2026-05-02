@@ -1,0 +1,51 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <header class="sheet-header">
+    <img
+      class="profile-img"
+      src="{{actor.img}}"
+      data-edit="img"
+      title="{{actor.name}}"
+    />
+
+    <div class="header-fields">
+      <h1>
+        <input name="name" type="text" value="{{actor.name}}" />
+      </h1>
+
+      <p>Typ: {{actor.type}}</p>
+    </div>
+  </header>
+
+  <section class="resources">
+    <h2>Ressourcen</h2>
+
+    <label>HP</label>
+    <div class="resource-row">
+      <input name="system.resources.hp.value" type="number" value="{{system.resources.hp.value}}" />
+      <span>/</span>
+      <input name="system.resources.hp.max" type="number" value="{{system.resources.hp.max}}" />
+    </div>
+
+    <label>Resonanz</label>
+    <div class="resource-row">
+      <input name="system.resources.resonance.value" type="number" value="{{system.resources.resonance.value}}" />
+      <span>/</span>
+      <input name="system.resources.resonance.max" type="number" value="{{system.resources.resonance.max}}" />
+    </div>
+  </section>
+
+  <section class="attributes">
+    <h2>Attribute</h2>
+
+    {{#each system.attributes as |attribute key|}}
+      <div class="attribute-row">
+        <label>{{key}}</label>
+        <input
+          name="system.attributes.{{key}}.value"
+          type="number"
+          value="{{attribute.value}}"
+        />
+      </div>
+    {{/each}}
+  </section>
+</form>

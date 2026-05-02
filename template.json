@@ -1,0 +1,27 @@
+{
+  "Actor": {
+    "types": ["character", "npc"],
+    "templates": {
+      "base": {
+        "attributes": {
+          "str": { "value": 0 },
+          "dex": { "value": 0 },
+          "con": { "value": 0 },
+          "int": { "value": 0 },
+          "wis": { "value": 0 },
+          "cha": { "value": 0 }
+        },
+        "resources": {
+          "hp": { "value": 10, "max": 10 },
+          "resonance": { "value": 3, "max": 3 }
+        }
+      }
+    },
+    "character": {
+      "templates": ["base"]
+    },
+    "npc": {
+      "templates": ["base"]
+    }
+  }
+}
