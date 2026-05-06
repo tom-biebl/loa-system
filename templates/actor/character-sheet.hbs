@@ -1,0 +1,142 @@
+<form class="{{cssClass}} loa-character-sheet" autocomplete="off">
+  <section class="loa-shell">
+    <aside class="loa-sidebar">
+      <div class="loa-portrait-wrap">
+        <img class="loa-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+      </div>
+
+      <input class="loa-name" name="name" type="text" value="{{actor.name}}" />
+
+      <div class="loa-subtitle">
+        <span>{{actor.type}}</span>
+        <span>Level {{system.level}}</span>
+      </div>
+
+      <nav class="loa-tabs" data-group="primary">
+        <a class="item active" data-tab="main">Übersicht</a>
+        <a class="item" data-tab="combat">Kampf</a>
+        <a class="item" data-tab="magic">Magie</a>
+        <a class="item" data-tab="items">Inventar</a>
+        <a class="item" data-tab="story">Story</a>
+      </nav>
+    </aside>
+
+    <main class="loa-content">
+
+      <section class="tab active" data-group="primary" data-tab="main">
+        <div class="loa-grid">
+
+          <div class="loa-card loa-card-wide">
+            <h2>Ressourcen</h2>
+            {{#each viewModel.resources as |resource|}}
+              <div class="loa-resource">
+                <label>{{resource.key}}</label>
+                <div>
+                  <input name="system.resources.{{resource.key}}.value" type="number" value="{{resource.value}}" />
+                  <span>/</span>
+                  <input name="system.resources.{{resource.key}}.max" type="number" value="{{resource.max}}" />
+                </div>
+              </div>
+              <div class="loa-bar {{#if (eq resource.key 'resonance')}}loa-bar-magic{{/if}}">
+                <div style="width: {{resource.ratioPercent}}%"></div>
+              </div>
+            {{/each}}
+          </div>
+
+          <div class="loa-card">
+            <h2>Action Economy</h2>
+            <div class="loa-pill-row">
+              <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
+              <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
+              <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+            </div>
+          </div>
+
+          <div class="loa-card loa-card-wide">
+            <h2>Attribute</h2>
+            <p class="loa-muted loa-mini">
+              Point-Buy: {{viewModel.pointBuy.spent}} / {{viewModel.pointBuy.total}}
+              ({{viewModel.pointBuy.remaining}} übrig)
+            </p>
+
+            <div class="loa-attributes">
+              {{#each viewModel.attributes as |attribute|}}
+                <div class="loa-attr">
+                  <label>{{attribute.label}}</label>
+                  <input name="system.attributes.{{attribute.key}}.value" type="number" value="{{attribute.value}}" />
+                  <button type="button" class="loa-mod-btn" data-action="roll-attribute" data-attribute="{{attribute.key}}" title="Wurf {{attribute.label}}">
+                    {{attribute.modifierLabel}}
+                  </button>
+                  <span class="loa-cost">{{attribute.costAtLevel}} pt</span>
+                </div>
+              {{/each}}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="tab" data-group="primary" data-tab="combat">
+        <div class="loa-card">
+          <h2>Kampf</h2>
+          <p class="loa-muted">Action Economy oben. Ausrüstung und Initiative folgen.</p>
+        </div>
+      </section>
+
+      <section class="tab" data-group="primary" data-tab="magic">
+        <div class="loa-card">
+          <h2>Resonanz</h2>
+          {{#if viewModel.resonance.triggered}}
+            <p>Aktive Schwelle: <strong>{{viewModel.resonance.threshold}}</strong></p>
+            {{#if viewModel.resonance.damageBonus}}
+              <p>Schadensbonus: {{viewModel.resonance.damageBonus}}</p>
+            {{/if}}
+            {{#if viewModel.resonance.rangeBonus}}
+              <p>Reichweite/AOE +{{viewModel.resonance.rangeBonus}} ft.</p>
+            {{/if}}
+            {{#if viewModel.resonance.requiresStabilityCheck}}
+              <p class="loa-warn">Stabilitätswurf gegen DC {{viewModel.resonance.dc}} erforderlich.</p>
+            {{/if}}
+          {{else}}
+            <p class="loa-muted">Keine Schwelle aktiv.</p>
+          {{/if}}
+
+          <div class="loa-spellcasting">
+            <label>Zauberattribut</label>
+            <select name="system.spellcasting.ability">
+              <option value="int" {{#if (eq system.spellcasting.ability 'int')}}selected{{/if}}>Intelligenz</option>
+              <option value="wis" {{#if (eq system.spellcasting.ability 'wis')}}selected{{/if}}>Weisheit</option>
+              <option value="cha" {{#if (eq system.spellcasting.ability 'cha')}}selected{{/if}}>Charisma</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab" data-group="primary" data-tab="items">
+        <div class="loa-card">
+          <h2>Inventar</h2>
+          {{#if items.length}}
+            <ul class="loa-item-list">
+              {{#each items as |item|}}
+                <li>
+                  <span class="loa-item-type">{{item.type}}</span>
+                  <span class="loa-item-name">{{item.name}}</span>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p class="loa-muted">Noch keine Items vorhanden.</p>
+          {{/if}}
+        </div>
+      </section>
+
+      <section class="tab" data-group="primary" data-tab="story">
+        <div class="loa-card">
+          <h2>Charaktergeschichte</h2>
+          <textarea name="system.biography">{{system.biography}}</textarea>
+        </div>
+      </section>
+
+    </main>
+  </section>
+</form>

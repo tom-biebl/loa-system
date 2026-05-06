@@ -1,0 +1,56 @@
+<form class="{{cssClass}} loa-character-sheet" autocomplete="off">
+  <section class="loa-shell">
+    <aside class="loa-sidebar">
+      <div class="loa-portrait-wrap">
+        <img class="loa-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+      </div>
+      <input class="loa-name" name="name" type="text" value="{{actor.name}}" />
+      <div class="loa-subtitle">
+        <span>NPC</span>
+        <span>Level {{system.level}}</span>
+      </div>
+    </aside>
+
+    <main class="loa-content">
+      <div class="loa-grid">
+        <div class="loa-card loa-card-wide">
+          <h2>Ressourcen</h2>
+          {{#each viewModel.resources as |resource|}}
+            <div class="loa-resource">
+              <label>{{resource.key}}</label>
+              <div>
+                <input name="system.resources.{{resource.key}}.value" type="number" value="{{resource.value}}" />
+                <span>/</span>
+                <input name="system.resources.{{resource.key}}.max" type="number" value="{{resource.max}}" />
+              </div>
+            </div>
+          {{/each}}
+        </div>
+
+        <div class="loa-card loa-card-wide">
+          <h2>Attribute</h2>
+          <div class="loa-attributes">
+            {{#each viewModel.attributes as |attribute|}}
+              <div class="loa-attr">
+                <label>{{attribute.label}}</label>
+                <input name="system.attributes.{{attribute.key}}.value" type="number" value="{{attribute.value}}" />
+                <button type="button" class="loa-mod-btn" data-action="roll-attribute" data-attribute="{{attribute.key}}">
+                  {{attribute.modifierLabel}}
+                </button>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+
+        <div class="loa-card loa-card-wide">
+          <h2>Action Economy</h2>
+          <div class="loa-pill-row">
+            <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
+            <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
+            <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+</form>

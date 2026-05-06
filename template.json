@@ -3,17 +3,32 @@
     "types": ["character", "npc"],
     "templates": {
       "base": {
+        "level": 1,
+        "biography": "",
         "attributes": {
-          "str": { "value": 0 },
-          "dex": { "value": 0 },
-          "con": { "value": 0 },
-          "int": { "value": 0 },
-          "wis": { "value": 0 },
-          "cha": { "value": 0 }
+          "str": { "value": 10, "modifier": 0 },
+          "dex": { "value": 10, "modifier": 0 },
+          "con": { "value": 10, "modifier": 0 },
+          "int": { "value": 10, "modifier": 0 },
+          "wis": { "value": 10, "modifier": 0 },
+          "cha": { "value": 10, "modifier": 0 }
         },
         "resources": {
           "hp": { "value": 10, "max": 10 },
-          "resonance": { "value": 3, "max": 3 }
+          "resonance": { "value": 0, "max": 30 }
+        },
+        "actionEconomy": {
+          "actions": { "value": 1, "max": 1 },
+          "bonusActions": { "value": 1, "max": 1 },
+          "reactions": { "value": 1, "max": 1 }
+        },
+        "spellcasting": {
+          "ability": "int"
+        },
+        "pointBuy": {
+          "total": 27,
+          "spent": 0,
+          "remaining": 27
         }
       }
     },
@@ -22,6 +37,55 @@
     },
     "npc": {
       "templates": ["base"]
+    }
+  },
+  "Item": {
+    "types": ["weapon", "armor", "spell", "ability", "consumable", "equipment"],
+    "templates": {
+      "describable": {
+        "description": ""
+      }
+    },
+    "weapon": {
+      "templates": ["describable"],
+      "damage": "1d8",
+      "damageType": "physical",
+      "attackBonus": 0,
+      "attribute": "str",
+      "range": "melee",
+      "properties": ""
+    },
+    "armor": {
+      "templates": ["describable"],
+      "defense": 0,
+      "armorType": "light",
+      "equipped": false
+    },
+    "spell": {
+      "templates": ["describable"],
+      "resonanceCost": 2,
+      "generatesResonance": true,
+      "level": 1,
+      "damage": "",
+      "damageType": "arcane",
+      "range": "30 ft.",
+      "attribute": "int",
+      "isCantrip": false
+    },
+    "ability": {
+      "templates": ["describable"],
+      "action": "action",
+      "cooldown": ""
+    },
+    "consumable": {
+      "templates": ["describable"],
+      "uses": { "value": 1, "max": 1 },
+      "effect": ""
+    },
+    "equipment": {
+      "templates": ["describable"],
+      "slot": "",
+      "equipped": false
     }
   }
 }

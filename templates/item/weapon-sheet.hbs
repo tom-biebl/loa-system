@@ -1,0 +1,38 @@
+<form class="{{cssClass}} loa-item-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">Waffe</span>
+    </div>
+  </header>
+
+  <section class="loa-item-body">
+    <div class="loa-field-grid">
+      <label>Schaden
+        <input name="system.damage" type="text" value="{{system.damage}}" />
+      </label>
+      <label>Schadensart
+        <input name="system.damageType" type="text" value="{{system.damageType}}" />
+      </label>
+      <label>Angriffsbonus
+        <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
+      </label>
+      <label>Attribut
+        <select name="system.attribute">
+          <option value="str" {{#if (eq system.attribute 'str')}}selected{{/if}}>Stärke</option>
+          <option value="dex" {{#if (eq system.attribute 'dex')}}selected{{/if}}>Geschicklichkeit</option>
+        </select>
+      </label>
+      <label>Reichweite
+        <input name="system.range" type="text" value="{{system.range}}" />
+      </label>
+      <label>Eigenschaften
+        <input name="system.properties" type="text" value="{{system.properties}}" />
+      </label>
+    </div>
+
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

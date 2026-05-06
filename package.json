@@ -1,0 +1,21 @@
+{
+  "name": "loa-system",
+  "version": "0.1.0",
+  "description": "Foundry VTT system for Legends of Arxanum.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "typecheck": "tsc --noEmit",
+    "version:set": "node scripts/update-version.mjs",
+    "package": "node scripts/package-release.mjs"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3",
+    "webpack": "^5.97.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

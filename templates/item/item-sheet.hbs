@@ -1,0 +1,14 @@
+<form class="{{cssClass}} loa-item-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">{{itemType}}</span>
+    </div>
+  </header>
+
+  <section class="loa-item-body">
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

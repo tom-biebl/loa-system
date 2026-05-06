@@ -1,0 +1,48 @@
+<form class="{{cssClass}} loa-item-sheet loa-spell-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">Zauber · Stufe {{system.level}}</span>
+    </div>
+    <button type="button" class="loa-cast-btn" data-action="cast-spell">Wirken</button>
+  </header>
+
+  <section class="loa-item-body">
+    <div class="loa-field-grid">
+      <label>Stufe
+        <input name="system.level" type="number" min="0" value="{{system.level}}" />
+      </label>
+      <label>Resonanzkosten
+        <input name="system.resonanceCost" type="number" min="0" value="{{system.resonanceCost}}" />
+      </label>
+      <label class="loa-checkbox">
+        <input name="system.isCantrip" type="checkbox" {{#if system.isCantrip}}checked{{/if}} />
+        Cantrip (kein RP)
+      </label>
+      <label class="loa-checkbox">
+        <input name="system.generatesResonance" type="checkbox" {{#if system.generatesResonance}}checked{{/if}} />
+        Erzeugt Resonanz
+      </label>
+      <label>Schaden
+        <input name="system.damage" type="text" value="{{system.damage}}" />
+      </label>
+      <label>Schadensart
+        <input name="system.damageType" type="text" value="{{system.damageType}}" />
+      </label>
+      <label>Reichweite
+        <input name="system.range" type="text" value="{{system.range}}" />
+      </label>
+      <label>Attribut
+        <select name="system.attribute">
+          <option value="int" {{#if (eq system.attribute 'int')}}selected{{/if}}>Intelligenz</option>
+          <option value="wis" {{#if (eq system.attribute 'wis')}}selected{{/if}}>Weisheit</option>
+          <option value="cha" {{#if (eq system.attribute 'cha')}}selected{{/if}}>Charisma</option>
+        </select>
+      </label>
+    </div>
+
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

@@ -242,8 +242,165 @@
   letter-spacing: 0.08em;
 }
 
+.loa-attr .loa-mod-btn {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 210, 160, 0.28);
+  background: rgba(219, 87, 22, 0.18);
+  color: #fff3e2;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 120ms ease;
+}
+
+.loa-attr .loa-mod-btn:hover {
+  background: rgba(219, 87, 22, 0.36);
+}
+
+.loa-attr .loa-cost {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #c7ad94;
+  text-align: right;
+}
+
 .loa-muted {
   color: #c7ad94;
+}
+
+.loa-mini {
+  font-size: 12px;
+  margin: -8px 0 12px;
+}
+
+.loa-warn {
+  color: #ffb083;
+  font-weight: 600;
+}
+
+.loa-spellcasting {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.loa-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.loa-item-list li {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.loa-item-list .loa-item-type {
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #d7aa81;
+  letter-spacing: 0.08em;
+}
+
+.loa-item-sheet {
+  padding: 16px;
+  color: #f4e6d0;
+  background:
+    linear-gradient(135deg, #17100d, #08090d 70%);
+}
+
+.loa-item-header {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.loa-item-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 210, 160, 0.22);
+}
+
+.loa-item-name {
+  width: 100%;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 190, 130, 0.22);
+  border-radius: 12px;
+  padding: 6px 10px;
+  color: #ffe9ce;
+}
+
+.loa-item-header .loa-item-type {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #c9a78a;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.loa-cast-btn {
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c2dff, #db5716);
+  border: 1px solid rgba(255, 210, 160, 0.28);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.loa-cast-btn:hover {
+  filter: brightness(1.1);
+}
+
+.loa-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.loa-field-grid label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #d7aa81;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.loa-field-grid label.loa-checkbox {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loa-chat-card {
+  padding: 8px 4px;
+}
+
+.loa-chat-card header {
+  font-size: 14px;
+  margin-bottom: 4px;
 }
 
 @keyframes loaFadeIn {
