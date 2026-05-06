@@ -1,7 +1,12 @@
 import type { AttributeKey } from "../constants/system.constants.js";
 
-export interface WeaponSystemData {
+interface BaseItemData {
   description: string;
+  /** Belegte Rucksack-Slots. Nicht alle Items zählen (Spells/Abilities = 0). */
+  slots: number;
+}
+
+export interface WeaponSystemData extends BaseItemData {
   damage: string;
   damageType: string;
   attackBonus: number;
@@ -10,15 +15,13 @@ export interface WeaponSystemData {
   properties: string;
 }
 
-export interface ArmorSystemData {
-  description: string;
-  defense: number;
+export interface ArmorSystemData extends BaseItemData {
+  acBonus: number;
   armorType: "light" | "medium" | "heavy" | "shield";
   equipped: boolean;
 }
 
-export interface SpellSystemData {
-  description: string;
+export interface SpellSystemData extends BaseItemData {
   resonanceCost: number;
   generatesResonance: boolean;
   level: number;
@@ -26,23 +29,21 @@ export interface SpellSystemData {
   damageType: string;
   range: string;
   attribute: AttributeKey;
+  attackBonus: number;
   isCantrip: boolean;
 }
 
-export interface AbilitySystemData {
-  description: string;
+export interface AbilitySystemData extends BaseItemData {
   action: "action" | "bonus" | "reaction" | "free";
   cooldown: string;
 }
 
-export interface ConsumableSystemData {
-  description: string;
+export interface ConsumableSystemData extends BaseItemData {
   uses: { value: number; max: number };
   effect: string;
 }
 
-export interface EquipmentSystemData {
-  description: string;
+export interface EquipmentSystemData extends BaseItemData {
   slot: string;
   equipped: boolean;
 }

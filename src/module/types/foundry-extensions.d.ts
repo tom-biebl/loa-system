@@ -9,10 +9,14 @@ declare class Actor {
   name?: string;
   type: string;
   img?: string;
+  uuid: string;
   system: any;
-  items?: { contents: unknown[] } | undefined;
+  items: any;
+  effects?: any;
   prepareDerivedData(): void;
   update(diff: AnyObject): Promise<unknown>;
+  createEmbeddedDocuments(type: string, data: unknown[]): Promise<unknown[]>;
+  deleteEmbeddedDocuments(type: string, ids: string[]): Promise<unknown[]>;
 }
 
 declare class Item {
@@ -22,7 +26,14 @@ declare class Item {
   img?: string;
   system: any;
   actor: any;
+  parent?: any;
+  uuid?: string;
   update(diff: AnyObject): Promise<unknown>;
+  delete(): Promise<unknown>;
+  toObject(): AnyObject;
+  static implementation: {
+    fromDropData(data: AnyObject): Promise<any>;
+  };
 }
 
 declare class ActorSheet {
@@ -32,6 +43,8 @@ declare class ActorSheet {
   get template(): string;
   getData(options?: unknown): AnyObject | Promise<AnyObject>;
   activateListeners(html: JQuery | HTMLElement): void;
+  _onDrop(event: DragEvent): Promise<unknown>;
+  _onDropItem(event: DragEvent, data: AnyObject): Promise<unknown>;
 }
 
 declare class ItemSheet {
@@ -96,6 +109,9 @@ declare const Actors: any;
 declare const Items: any;
 declare const ChatMessage: any;
 declare const CONST: any;
+declare const TextEditor: {
+  getDragEventData(event: DragEvent): AnyObject;
+};
 declare const loadTemplates: (paths: string[]) => Promise<unknown>;
 declare const renderTemplate: (path: string, data: unknown) => Promise<string>;
 declare const mergeObject: any;

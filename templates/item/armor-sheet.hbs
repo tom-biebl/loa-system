@@ -1,0 +1,35 @@
+<form class="{{cssClass}} loa-item-sheet loa-armor-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">Rüstung</span>
+    </div>
+  </header>
+
+  <section class="loa-item-body">
+    <div class="loa-field-grid">
+      <label>AC-Bonus
+        <input name="system.acBonus" type="number" value="{{system.acBonus}}" />
+      </label>
+      <label>Rüstungstyp
+        <select name="system.armorType">
+          <option value="light"  {{#if (eq system.armorType 'light')}}selected{{/if}}>Leicht</option>
+          <option value="medium" {{#if (eq system.armorType 'medium')}}selected{{/if}}>Mittel</option>
+          <option value="heavy"  {{#if (eq system.armorType 'heavy')}}selected{{/if}}>Schwer</option>
+          <option value="shield" {{#if (eq system.armorType 'shield')}}selected{{/if}}>Schild</option>
+        </select>
+      </label>
+      <label>Slot-Belegung
+        <input name="system.slots" type="number" min="0" value="{{system.slots}}" />
+      </label>
+      <label class="loa-checkbox">
+        <input name="system.equipped" type="checkbox" {{#if system.equipped}}checked{{/if}} />
+        Getragen
+      </label>
+    </div>
+
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

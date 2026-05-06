@@ -17,6 +17,14 @@
           "hp": { "value": 10, "max": 10 },
           "resonance": { "value": 0, "max": 30 }
         },
+        "ac": {
+          "base": 10,
+          "bonus": 0,
+          "value": 10
+        },
+        "inventory": {
+          "capacity": 16
+        },
         "actionEconomy": {
           "actions": { "value": 1, "max": 1 },
           "bonusActions": { "value": 1, "max": 1 },
@@ -43,7 +51,8 @@
     "types": ["weapon", "armor", "spell", "ability", "consumable", "equipment"],
     "templates": {
       "describable": {
-        "description": ""
+        "description": "",
+        "slots": 1
       }
     },
     "weapon": {
@@ -53,13 +62,15 @@
       "attackBonus": 0,
       "attribute": "str",
       "range": "melee",
-      "properties": ""
+      "properties": "",
+      "slots": 2
     },
     "armor": {
       "templates": ["describable"],
-      "defense": 0,
+      "acBonus": 2,
       "armorType": "light",
-      "equipped": false
+      "equipped": false,
+      "slots": 4
     },
     "spell": {
       "templates": ["describable"],
@@ -70,22 +81,27 @@
       "damageType": "arcane",
       "range": "30 ft.",
       "attribute": "int",
-      "isCantrip": false
+      "attackBonus": 0,
+      "isCantrip": false,
+      "slots": 0
     },
     "ability": {
       "templates": ["describable"],
       "action": "action",
-      "cooldown": ""
+      "cooldown": "",
+      "slots": 0
     },
     "consumable": {
       "templates": ["describable"],
       "uses": { "value": 1, "max": 1 },
-      "effect": ""
+      "effect": "",
+      "slots": 1
     },
     "equipment": {
       "templates": ["describable"],
       "slot": "",
-      "equipped": false
+      "equipped": false,
+      "slots": 1
     }
   }
 }

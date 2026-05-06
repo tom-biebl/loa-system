@@ -12,53 +12,39 @@
         <span>Level {{system.level}}</span>
       </div>
 
+      <div class="loa-stat-strip">
+        <div class="loa-stat">
+          <span class="loa-stat-label">AC</span>
+          <span class="loa-stat-value">{{viewModel.ac.value}}</span>
+        </div>
+        {{#each viewModel.resources as |resource|}}
+          <div class="loa-stat loa-stat-{{resource.key}}">
+            <span class="loa-stat-label">{{resource.label}}</span>
+            <span class="loa-stat-value">{{resource.value}} / {{resource.max}}</span>
+          </div>
+        {{/each}}
+      </div>
+
       <nav class="loa-tabs" data-group="primary">
         <a class="item active" data-tab="main">Übersicht</a>
+        <a class="item" data-tab="inventory">Rucksack</a>
         <a class="item" data-tab="combat">Kampf</a>
         <a class="item" data-tab="magic">Magie</a>
-        <a class="item" data-tab="items">Inventar</a>
         <a class="item" data-tab="story">Story</a>
       </nav>
     </aside>
 
     <main class="loa-content">
 
+      {{!-- ÜBERSICHT --}}
       <section class="tab active" data-group="primary" data-tab="main">
         <div class="loa-grid">
-
-          <div class="loa-card loa-card-wide">
-            <h2>Ressourcen</h2>
-            {{#each viewModel.resources as |resource|}}
-              <div class="loa-resource">
-                <label>{{resource.key}}</label>
-                <div>
-                  <input name="system.resources.{{resource.key}}.value" type="number" value="{{resource.value}}" />
-                  <span>/</span>
-                  <input name="system.resources.{{resource.key}}.max" type="number" value="{{resource.max}}" />
-                </div>
-              </div>
-              <div class="loa-bar {{#if (eq resource.key 'resonance')}}loa-bar-magic{{/if}}">
-                <div style="width: {{resource.ratioPercent}}%"></div>
-              </div>
-            {{/each}}
-          </div>
-
-          <div class="loa-card">
-            <h2>Action Economy</h2>
-            <div class="loa-pill-row">
-              <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
-              <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
-              <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
-            </div>
-          </div>
-
           <div class="loa-card loa-card-wide">
             <h2>Attribute</h2>
             <p class="loa-muted loa-mini">
               Point-Buy: {{viewModel.pointBuy.spent}} / {{viewModel.pointBuy.total}}
               ({{viewModel.pointBuy.remaining}} übrig)
             </p>
-
             <div class="loa-attributes">
               {{#each viewModel.attributes as |attribute|}}
                 <div class="loa-attr">
@@ -73,16 +59,124 @@
             </div>
           </div>
 
+          <div class="loa-card">
+            <h2>Action Economy</h2>
+            <div class="loa-pill-row">
+              <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
+              <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
+              <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+            </div>
+          </div>
+
+          <div class="loa-card">
+            <h2>Rüstungsklasse</h2>
+            <div class="loa-ac-display">
+              <div class="loa-ac-shield">
+                <span class="loa-ac-value">{{viewModel.ac.value}}</span>
+              </div>
+              <div class="loa-ac-detail">
+                <p>Basis {{viewModel.ac.base}}</p>
+                {{#if viewModel.equippedArmor}}
+                  <p>Rüstung +{{viewModel.equippedArmor.acBonus}} ({{viewModel.equippedArmor.name}})</p>
+                {{else}}
+                  <p class="loa-muted">Keine Rüstung getragen.</p>
+                {{/if}}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
+      {{!-- RUCKSACK --}}
+      <section class="tab" data-group="primary" data-tab="inventory">
+        <div class="loa-grid">
+          <div class="loa-card">
+            <h2>Rüstung</h2>
+            <div class="loa-armor-slot loa-dropzone" data-drop-zone="armor">
+              {{#if viewModel.equippedArmor}}
+                <div class="loa-armor-equipped loa-draggable" data-item-id="{{viewModel.equippedArmor.id}}">
+                  <img src="{{viewModel.equippedArmor.img}}" data-action="open-item" />
+                  <div class="loa-armor-meta">
+                    <strong>{{viewModel.equippedArmor.name}}</strong>
+                    <span>+{{viewModel.equippedArmor.acBonus}} AC</span>
+                  </div>
+                  <button type="button" class="loa-action-btn" data-action="unequip-armor" data-item-id="{{viewModel.equippedArmor.id}}">Ablegen</button>
+                </div>
+              {{else}}
+                <div class="loa-armor-empty">
+                  <span>Rüstung hierher ziehen</span>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="loa-card loa-card-wide">
+            <h2>
+              Rucksack
+              <span class="loa-muted loa-mini">
+                {{viewModel.inventory.used}} / {{viewModel.inventory.capacity}} Slots belegt
+              </span>
+            </h2>
+            <div class="loa-backpack loa-dropzone" data-drop-zone="backpack">
+              <div class="loa-backpack-grid">
+                {{#each viewModel.inventory.slots as |slot|}}
+                  {{#if slot.item}}
+                    <div class="loa-slot filled loa-draggable" data-item-id="{{slot.item.id}}" title="{{slot.item.name}}">
+                      <img src="{{slot.item.img}}" data-action="open-item" />
+                      <span class="loa-slot-name">{{slot.item.name}}</span>
+                      {{#if (eq slot.item.type 'weapon')}}
+                        <button type="button" class="loa-slot-action loa-slot-attack" data-action="attack-weapon" data-item-id="{{slot.item.id}}" title="Angreifen">⚔</button>
+                      {{/if}}
+                      {{#if (eq slot.item.type 'armor')}}
+                        <button type="button" class="loa-slot-action" data-action="equip-armor" data-item-id="{{slot.item.id}}" title="Anlegen">🛡</button>
+                      {{/if}}
+                      <button type="button" class="loa-slot-trash" data-action="delete-item" data-item-id="{{slot.item.id}}" title="Löschen">✕</button>
+                    </div>
+                  {{else}}
+                    <div class="loa-slot empty">
+                      <span class="loa-slot-empty">·</span>
+                    </div>
+                  {{/if}}
+                {{/each}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {{!-- KAMPF --}}
       <section class="tab" data-group="primary" data-tab="combat">
         <div class="loa-card">
-          <h2>Kampf</h2>
-          <p class="loa-muted">Action Economy oben. Ausrüstung und Initiative folgen.</p>
+          <h2>Waffen</h2>
+          {{#if viewModel.weapons.length}}
+            <div class="loa-weapon-list">
+              {{#each viewModel.weapons as |weapon|}}
+                <div class="loa-weapon-row loa-draggable" data-item-id="{{weapon.id}}">
+                  <img src="{{weapon.img}}" data-action="open-item" />
+                  <div class="loa-weapon-meta">
+                    <strong>{{weapon.name}}</strong>
+                    <span class="loa-muted">{{weapon.damage}} {{weapon.damageType}} · {{weapon.range}} · {{weapon.attribute}}</span>
+                  </div>
+                  <button type="button" class="loa-action-btn" data-action="attack-weapon" data-item-id="{{weapon.id}}">Angreifen</button>
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="loa-muted">Keine Waffen im Inventar.</p>
+          {{/if}}
+        </div>
+
+        <div class="loa-card">
+          <h2>Action Economy</h2>
+          <div class="loa-pill-row">
+            <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
+            <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
+            <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+          </div>
         </div>
       </section>
 
+      {{!-- MAGIE --}}
       <section class="tab" data-group="primary" data-tab="magic">
         <div class="loa-card">
           <h2>Resonanz</h2>
@@ -110,26 +204,34 @@
             </select>
           </div>
         </div>
-      </section>
 
-      <section class="tab" data-group="primary" data-tab="items">
-        <div class="loa-card">
-          <h2>Inventar</h2>
-          {{#if items.length}}
-            <ul class="loa-item-list">
-              {{#each items as |item|}}
-                <li>
-                  <span class="loa-item-type">{{item.type}}</span>
-                  <span class="loa-item-name">{{item.name}}</span>
-                </li>
-              {{/each}}
-            </ul>
-          {{else}}
-            <p class="loa-muted">Noch keine Items vorhanden.</p>
-          {{/if}}
+        <div class="loa-card loa-card-wide">
+          <h2>Spellbook</h2>
+          <div class="loa-spellbook loa-dropzone" data-drop-zone="spellbook">
+            {{#if viewModel.spellbook.length}}
+              <div class="loa-spell-grid">
+                {{#each viewModel.spellbook as |spell|}}
+                  <div class="loa-spell-tile loa-draggable" data-item-id="{{spell.id}}">
+                    <img src="{{spell.img}}" data-action="open-item" title="{{spell.name}}" />
+                    <div class="loa-spell-meta">
+                      <strong>{{spell.name}}</strong>
+                      <span class="loa-muted">
+                        {{#if spell.isCantrip}}Cantrip{{else}}Stufe {{spell.level}} · {{spell.resonanceCost}} RP{{/if}}
+                      </span>
+                    </div>
+                    <button type="button" class="loa-action-btn" data-action="cast-spell" data-item-id="{{spell.id}}">Wirken</button>
+                    <button type="button" class="loa-slot-trash" data-action="delete-item" data-item-id="{{spell.id}}" title="Entfernen">✕</button>
+                  </div>
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="loa-spellbook-empty">Zauber hierher ziehen</div>
+            {{/if}}
+          </div>
         </div>
       </section>
 
+      {{!-- STORY --}}
       <section class="tab" data-group="primary" data-tab="story">
         <div class="loa-card">
           <h2>Charaktergeschichte</h2>

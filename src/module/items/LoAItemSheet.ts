@@ -22,6 +22,8 @@ export class LoAItemSheet extends ItemSheet {
         return TEMPLATE_PATHS.itemWeapon;
       case "spell":
         return TEMPLATE_PATHS.itemSpell;
+      case "armor":
+        return TEMPLATE_PATHS.itemArmor;
       default:
         return TEMPLATE_PATHS.itemGeneric;
     }

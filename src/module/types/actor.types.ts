@@ -26,12 +26,24 @@ export interface PointBuyData {
   remaining: number;
 }
 
+export interface ArmorClassData {
+  base: number;
+  bonus: number;
+  value: number;
+}
+
+export interface InventoryConfig {
+  capacity: number;
+}
+
 export interface LoAActorSystemData {
   attributes: Record<AttributeKey, LoAAttribute>;
   resources: Record<string, LoAResource>;
   actionEconomy: ActionEconomyData;
   spellcasting: SpellcastingData;
   pointBuy: PointBuyData;
+  ac: ArmorClassData;
+  inventory: InventoryConfig;
   biography: string;
   level: number;
 }

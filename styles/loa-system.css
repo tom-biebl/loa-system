@@ -1,4 +1,24 @@
+/* ============================================================
+   LoA System — cozy fantasy character sheet
+   Palette: parchment, leather, aged gold, ink
+   ============================================================ */
+
 .loa-system.sheet.actor {
+  --loa-parchment: #f1e3c4;
+  --loa-parchment-soft: #f8eed5;
+  --loa-parchment-dark: #d6bf91;
+  --loa-leather: #6b4423;
+  --loa-leather-dark: #3a2418;
+  --loa-leather-light: #8b6440;
+  --loa-ink: #2a1810;
+  --loa-ink-soft: #4a3424;
+  --loa-gold: #a3812e;
+  --loa-gold-light: #c9a458;
+  --loa-blood: #8b3a2e;
+  --loa-shadow: rgba(58, 36, 24, 0.35);
+  --loa-bar-hp: linear-gradient(90deg, #8b3a2e, #c25d3f);
+  --loa-bar-mana: linear-gradient(90deg, #5a3a78, #876da7);
+
   background: transparent;
   box-shadow: none;
 }
@@ -6,11 +26,12 @@
 .loa-system.sheet.actor .window-content {
   padding: 0;
   background:
-    radial-gradient(circle at top left, rgba(219, 87, 22, 0.25), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(75, 31, 120, 0.25), transparent 35%),
-    linear-gradient(135deg, #17100d, #08090d 70%);
-  color: #f4e6d0;
+    radial-gradient(circle at 20% 0%, rgba(255, 240, 210, 0.55), transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(180, 140, 90, 0.25), transparent 50%),
+    var(--loa-parchment);
+  color: var(--loa-ink);
   overflow: hidden;
+  font-family: "Signika", "Palatino Linotype", "Book Antiqua", serif;
 }
 
 .loa-character-sheet {
@@ -19,93 +40,138 @@
 
 .loa-shell {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 280px 1fr;
   height: 100%;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent),
-    rgba(12, 10, 10, 0.82);
 }
 
+/* -------------------- Sidebar (Leder) ----------------------- */
+
 .loa-sidebar {
-  padding: 24px 18px;
+  padding: 22px 18px;
   background:
-    linear-gradient(180deg, rgba(219, 87, 22, 0.18), transparent 45%),
-    rgba(0, 0, 0, 0.35);
-  border-right: 1px solid rgba(255, 190, 130, 0.18);
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.04) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, var(--loa-leather-light), var(--loa-leather-dark));
+  color: var(--loa-parchment-soft);
+  border-right: 2px solid var(--loa-gold);
+  box-shadow: inset -6px 0 12px rgba(0, 0, 0, 0.3);
 }
 
 .loa-portrait-wrap {
-  width: 184px;
-  height: 184px;
-  margin: 0 auto 18px;
-  padding: 5px;
-  border-radius: 28px;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 16px;
+  padding: 4px;
+  border-radius: 50%;
   background:
-    linear-gradient(135deg, #db5716, #7c2dff, #1d1d24);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    conic-gradient(from 90deg, var(--loa-gold), var(--loa-gold-light), var(--loa-gold));
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 2px var(--loa-leather-dark);
 }
 
 .loa-portrait {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: none;
-  border-radius: 23px;
+  border: 2px solid var(--loa-leather-dark);
+  border-radius: 50%;
 }
 
 .loa-name {
   width: 100%;
-  font-size: 24px;
+  font-size: 22px;
   text-align: center;
-  color: #ffe9ce;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 190, 130, 0.22);
-  border-radius: 14px;
+  color: var(--loa-parchment-soft);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--loa-gold);
+  border-radius: 6px;
   padding: 8px;
+  font-family: inherit;
 }
 
 .loa-subtitle {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin: 10px 0 22px;
+  margin: 10px 0 18px;
   font-size: 11px;
   text-transform: uppercase;
-  color: #c9a78a;
-  letter-spacing: 0.08em;
+  color: var(--loa-gold-light);
+  letter-spacing: 0.1em;
 }
+
+/* Stat-Strip (HP, Resonanz, AC) */
+
+.loa-stat-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.loa-stat {
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(201, 164, 88, 0.35);
+  text-align: center;
+}
+
+.loa-stat-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--loa-gold-light);
+  margin-bottom: 4px;
+}
+
+.loa-stat-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--loa-parchment-soft);
+}
+
+/* Tabs als Lederknöpfe */
 
 .loa-tabs {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .loa-tabs .item {
-  color: #e7c9aa;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--loa-parchment-soft);
+  border: 1px solid rgba(201, 164, 88, 0.25);
   text-decoration: none;
   cursor: pointer;
-  transition: 160ms ease;
+  transition: 140ms ease;
+  font-size: 14px;
+  letter-spacing: 0.04em;
 }
 
 .loa-tabs .item:hover {
-  transform: translateX(4px);
-  background: rgba(219, 87, 22, 0.18);
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--loa-gold);
+  transform: translateX(3px);
 }
 
 .loa-tabs .item.active {
-  color: #fff3e2;
-  background:
-    linear-gradient(135deg, rgba(219, 87, 22, 0.75), rgba(124, 45, 255, 0.38));
-  border-color: rgba(255, 210, 160, 0.35);
-  box-shadow: 0 12px 32px rgba(219, 87, 22, 0.18);
+  background: linear-gradient(180deg, var(--loa-gold), var(--loa-gold-light));
+  color: var(--loa-ink);
+  border-color: var(--loa-leather-dark);
+  text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  font-weight: 600;
 }
 
+/* -------------------- Main content -------------------------- */
+
 .loa-content {
-  padding: 24px;
+  padding: 22px;
   overflow-y: auto;
 }
 
@@ -120,19 +186,20 @@
 
 .loa-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 18px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .loa-card {
   padding: 18px;
-  border-radius: 24px;
+  border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
-  border: 1px solid rgba(255, 220, 170, 0.13);
+    linear-gradient(180deg, rgba(255, 250, 230, 0.7), rgba(220, 200, 165, 0.35)),
+    var(--loa-parchment-soft);
+  border: 1px solid var(--loa-leather);
   box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 2px 6px var(--loa-shadow),
+    inset 0 0 30px rgba(168, 130, 80, 0.1);
 }
 
 .loa-card-wide {
@@ -140,65 +207,45 @@
 }
 
 .loa-card h2 {
-  margin: 0 0 14px;
-  font-size: 19px;
-  color: #ffd7aa;
-  letter-spacing: 0.03em;
+  margin: 0 0 12px;
+  font-size: 17px;
+  color: var(--loa-leather-dark);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--loa-leather);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
 }
 
-.loa-resource {
-  display: grid;
-  grid-template-columns: 1fr 140px;
-  align-items: center;
-  gap: 14px;
-  margin: 10px 0;
-}
-
-.loa-resource label {
-  color: #e8c4a0;
-  font-weight: 600;
-}
-
-.loa-resource div {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 6px;
-  align-items: center;
-}
+/* Eingabefelder generisch */
 
 .loa-system.sheet input,
+.loa-system.sheet select,
 .loa-system.sheet textarea {
-  color: #fff1df;
-  background: rgba(0, 0, 0, 0.32);
-  border: 1px solid rgba(255, 210, 160, 0.18);
-  border-radius: 12px;
-  padding: 7px 9px;
+  color: var(--loa-ink);
+  background: rgba(255, 250, 235, 0.7);
+  border: 1px solid var(--loa-leather-light);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: inherit;
+}
+
+.loa-system.sheet input:focus,
+.loa-system.sheet select:focus,
+.loa-system.sheet textarea:focus {
+  outline: none;
+  border-color: var(--loa-gold);
+  box-shadow: 0 0 0 2px rgba(201, 164, 88, 0.3);
 }
 
 .loa-system.sheet textarea {
-  min-height: 340px;
+  min-height: 320px;
   resize: vertical;
 }
 
-.loa-bar {
-  height: 12px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.loa-bar div {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #7c1f1f, #db5716, #ffd08a);
-  box-shadow: 0 0 18px rgba(219, 87, 22, 0.55);
-}
-
-.loa-bar-magic div {
-  background: linear-gradient(90deg, #34216b, #7c2dff, #b99cff);
-  box-shadow: 0 0 18px rgba(124, 45, 255, 0.55);
-}
+/* -------------------- Action Economy ------------------------ */
 
 .loa-pill-row {
   display: flex;
@@ -207,119 +254,434 @@
 }
 
 .loa-pill {
-  padding: 7px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  color: #ffe5c7;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 210, 160, 0.16);
+  color: var(--loa-ink);
+  background: linear-gradient(180deg, rgba(255, 240, 210, 0.8), rgba(214, 191, 145, 0.7));
+  border: 1px solid var(--loa-leather);
   font-size: 12px;
+  font-weight: 600;
 }
 
 .loa-pill.danger {
-  background: rgba(219, 87, 22, 0.18);
-  border-color: rgba(219, 87, 22, 0.45);
+  background: linear-gradient(180deg, #c66249, var(--loa-blood));
+  color: var(--loa-parchment-soft);
 }
+
+/* -------------------- Attribute ----------------------------- */
 
 .loa-attributes {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .loa-attr {
-  padding: 12px;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 8px;
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.45);
+  border: 1px solid var(--loa-leather);
+  text-align: center;
 }
 
 .loa-attr label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-transform: uppercase;
-  font-size: 12px;
-  color: #d7aa81;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  color: var(--loa-leather-dark);
+  letter-spacing: 0.1em;
+  font-weight: 600;
 }
 
-.loa-attr .loa-mod-btn {
-  display: block;
+.loa-attr input {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.loa-mod-btn {
   width: 100%;
   margin-top: 6px;
-  padding: 6px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 210, 160, 0.28);
-  background: rgba(219, 87, 22, 0.18);
-  color: #fff3e2;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid var(--loa-leather-dark);
+  background: linear-gradient(180deg, var(--loa-gold-light), var(--loa-gold));
+  color: var(--loa-ink);
   font-weight: 700;
   cursor: pointer;
   transition: 120ms ease;
 }
 
-.loa-attr .loa-mod-btn:hover {
-  background: rgba(219, 87, 22, 0.36);
+.loa-mod-btn:hover {
+  filter: brightness(1.07);
 }
 
 .loa-attr .loa-cost {
   display: block;
-  margin-top: 6px;
-  font-size: 11px;
-  color: #c7ad94;
-  text-align: right;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--loa-leather-dark);
+  opacity: 0.75;
 }
 
-.loa-muted {
-  color: #c7ad94;
-}
+/* -------------------- AC-Anzeige ---------------------------- */
 
-.loa-mini {
-  font-size: 12px;
-  margin: -8px 0 12px;
-}
-
-.loa-warn {
-  color: #ffb083;
-  font-weight: 600;
-}
-
-.loa-spellcasting {
+.loa-ac-display {
   display: grid;
-  grid-template-columns: 1fr 200px;
-  gap: 12px;
+  grid-template-columns: 80px 1fr;
+  gap: 14px;
   align-items: center;
-  margin-top: 16px;
 }
 
-.loa-item-list {
-  list-style: none;
+.loa-ac-shield {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, var(--loa-gold-light), var(--loa-gold) 60%, var(--loa-leather));
+  border: 3px solid var(--loa-leather-dark);
+  box-shadow: 0 4px 8px var(--loa-shadow), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loa-ac-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--loa-ink);
+}
+
+.loa-ac-detail p {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+/* -------------------- Rüstungs-Slot ------------------------- */
+
+.loa-armor-slot {
+  min-height: 110px;
+  padding: 12px;
+  border: 2px dashed var(--loa-leather);
+  border-radius: 8px;
+  background: rgba(168, 130, 80, 0.1);
+}
+
+.loa-armor-slot.dragover {
+  background: rgba(201, 164, 88, 0.25);
+  border-color: var(--loa-gold);
+}
+
+.loa-armor-equipped {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.loa-armor-equipped img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 1px solid var(--loa-leather);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.loa-armor-meta strong {
+  display: block;
+  font-size: 14px;
+  color: var(--loa-leather-dark);
+}
+
+.loa-armor-meta span {
+  font-size: 12px;
+  color: var(--loa-ink-soft);
+}
+
+.loa-armor-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  color: var(--loa-leather);
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* -------------------- Backpack (Rucksack) ------------------- */
+
+.loa-backpack {
+  padding: 14px;
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at top, rgba(255, 245, 220, 0.15), transparent 55%),
+    linear-gradient(180deg, var(--loa-leather-light), var(--loa-leather));
+  border: 2px solid var(--loa-leather-dark);
+  box-shadow:
+    inset 0 4px 10px rgba(0, 0, 0, 0.35),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 10px var(--loa-shadow);
+}
+
+.loa-backpack.dragover {
+  border-color: var(--loa-gold);
+  box-shadow:
+    inset 0 4px 10px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(201, 164, 88, 0.6);
+}
+
+.loa-backpack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.loa-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.2)),
+    rgba(20, 12, 6, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.loa-slot.filled {
+  background:
+    linear-gradient(180deg, rgba(255, 240, 200, 0.18), rgba(0, 0, 0, 0.2)),
+    rgba(40, 25, 15, 0.5);
+  border-color: var(--loa-gold);
+  box-shadow:
+    inset 0 0 8px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(201, 164, 88, 0.45);
+}
+
+.loa-slot.empty .loa-slot-empty {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  color: rgba(214, 191, 145, 0.18);
+  padding: 30% 0;
+}
+
+.loa-slot img {
+  position: absolute;
+  inset: 4px 4px 22px 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 26px);
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.loa-slot-name {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  font-size: 9px;
+  text-align: center;
+  color: var(--loa-parchment-soft);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.loa-slot-action,
+.loa-slot-trash {
+  position: absolute;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--loa-leather-dark);
+  background: rgba(255, 240, 210, 0.85);
+  color: var(--loa-ink);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
   padding: 0;
-  margin: 0;
+}
+
+.loa-slot-action {
+  left: 2px;
+}
+
+.loa-slot-trash {
+  right: 2px;
+  background: rgba(139, 58, 46, 0.85);
+  color: var(--loa-parchment-soft);
+}
+
+.loa-slot-action:hover {
+  background: var(--loa-gold-light);
+}
+
+.loa-slot-trash:hover {
+  background: var(--loa-blood);
+}
+
+/* -------------------- Waffenliste --------------------------- */
+
+.loa-weapon-list {
   display: grid;
   gap: 8px;
 }
 
-.loa-item-list li {
+.loa-weapon-row {
   display: grid;
-  grid-template-columns: 100px 1fr;
+  grid-template-columns: 56px 1fr auto;
   gap: 12px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 250, 230, 0.5);
+  border: 1px solid var(--loa-leather);
 }
 
-.loa-item-list .loa-item-type {
-  text-transform: uppercase;
-  font-size: 11px;
-  color: #d7aa81;
-  letter-spacing: 0.08em;
+.loa-weapon-row img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--loa-leather-light);
+  cursor: pointer;
 }
+
+.loa-weapon-meta strong {
+  display: block;
+  color: var(--loa-leather-dark);
+}
+
+/* -------------------- Spellbook ----------------------------- */
+
+.loa-spellbook {
+  padding: 12px;
+  min-height: 90px;
+  border: 2px dashed var(--loa-leather);
+  border-radius: 8px;
+  background: rgba(168, 130, 80, 0.08);
+}
+
+.loa-spellbook.dragover {
+  background: rgba(201, 164, 88, 0.2);
+  border-color: var(--loa-gold);
+}
+
+.loa-spellbook-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  color: var(--loa-leather);
+  font-style: italic;
+  opacity: 0.65;
+}
+
+.loa-spell-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.loa-spell-tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 250, 230, 0.55);
+  border: 1px solid var(--loa-leather);
+}
+
+.loa-spell-tile img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--loa-leather-light);
+  cursor: pointer;
+}
+
+.loa-spell-meta strong {
+  display: block;
+  color: var(--loa-leather-dark);
+}
+
+.loa-spell-tile .loa-slot-trash {
+  position: static;
+  margin-left: 4px;
+}
+
+/* -------------------- Generic action buttons ---------------- */
+
+.loa-action-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, var(--loa-gold-light), var(--loa-gold));
+  color: var(--loa-ink);
+  font-weight: 600;
+  border: 1px solid var(--loa-leather-dark);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.loa-action-btn:hover {
+  filter: brightness(1.08);
+}
+
+.loa-action-btn:active {
+  transform: translateY(1px);
+}
+
+/* -------------------- Magie + Allgemein --------------------- */
+
+.loa-spellcasting {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.loa-muted {
+  color: var(--loa-ink-soft);
+  opacity: 0.78;
+}
+
+.loa-mini {
+  font-size: 12px;
+}
+
+.loa-warn {
+  color: var(--loa-blood);
+  font-weight: 700;
+}
+
+/* -------------------- Item-Sheets --------------------------- */
 
 .loa-item-sheet {
   padding: 16px;
-  color: #f4e6d0;
+  color: var(--loa-ink);
   background:
-    linear-gradient(135deg, #17100d, #08090d 70%);
+    radial-gradient(circle at 20% 0%, rgba(255, 240, 210, 0.55), transparent 45%),
+    var(--loa-parchment);
+  font-family: "Signika", "Palatino Linotype", serif;
 }
 
 .loa-item-header {
@@ -333,42 +695,42 @@
 .loa-item-img {
   width: 64px;
   height: 64px;
-  border-radius: 14px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 1px solid rgba(255, 210, 160, 0.22);
+  border: 2px solid var(--loa-leather-dark);
 }
 
 .loa-item-name {
   width: 100%;
   font-size: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 190, 130, 0.22);
-  border-radius: 12px;
+  background: rgba(255, 250, 230, 0.7);
+  border: 1px solid var(--loa-leather);
+  border-radius: 6px;
   padding: 6px 10px;
-  color: #ffe9ce;
+  color: var(--loa-ink);
 }
 
 .loa-item-header .loa-item-type {
   display: block;
   font-size: 11px;
   text-transform: uppercase;
-  color: #c9a78a;
-  letter-spacing: 0.08em;
+  color: var(--loa-leather-dark);
+  letter-spacing: 0.1em;
   margin-top: 4px;
 }
 
 .loa-cast-btn {
   padding: 8px 14px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #7c2dff, #db5716);
-  border: 1px solid rgba(255, 210, 160, 0.28);
-  color: #fff;
+  border-radius: 6px;
+  background: linear-gradient(180deg, var(--loa-gold-light), var(--loa-gold));
+  border: 1px solid var(--loa-leather-dark);
+  color: var(--loa-ink);
   font-weight: 700;
   cursor: pointer;
 }
 
 .loa-cast-btn:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.08);
 }
 
 .loa-field-grid {
@@ -382,7 +744,7 @@
   display: grid;
   gap: 4px;
   font-size: 12px;
-  color: #d7aa81;
+  color: var(--loa-leather-dark);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -392,15 +754,41 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  text-transform: none;
 }
+
+/* -------------------- Chat-Karten --------------------------- */
 
 .loa-chat-card {
   padding: 8px 4px;
+  font-family: "Signika", "Palatino Linotype", serif;
+  color: var(--loa-ink, #2a1810);
 }
 
-.loa-chat-card header {
-  font-size: 14px;
+.loa-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 4px;
+}
+
+.loa-chat-header img {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.loa-chat-attacks {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+}
+
+.loa-chat-attacks li {
+  padding: 4px 6px;
+  border-left: 2px solid var(--loa-gold, #a3812e);
+  margin: 2px 0;
 }
 
 @keyframes loaFadeIn {
@@ -408,7 +796,6 @@
     opacity: 0;
     transform: translateY(6px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
