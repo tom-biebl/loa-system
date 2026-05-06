@@ -6,26 +6,50 @@ import type {
 } from "../types/roll.types.js";
 import { RollFormulaBuilder } from "./RollFormulaBuilder.js";
 
+interface EvaluatedRoll {
+  total: number;
+  formula: string;
+  dice: Array<{ results: Array<{ result: number }> }>;
+  toMessage(options?: Record<string, unknown>): Promise<unknown>;
+}
+
+interface MessageRollOptions {
+  flavor?: string;
+  speaker?: unknown;
+}
+
 /**
- * Zentrale Anlaufstelle für Würfelwürfe. Sheets / Items / Hooks rufen hier auf,
- * statt selbst Roll-Instanzen zu erzeugen oder Chat-Messages zu schreiben.
+ * Zentrale Anlaufstelle für Würfelwürfe.
+ *
+ * Alle öffentlichen Wurf-Methoden gehen über `Roll.toMessage()`, damit
+ * Dice-So-Nice (und andere Foundry-Hooks) den Wurf greifen können.
  */
 export class RollManager {
-  static async roll(options: RollOptions): Promise<unknown> {
-    const roll = new Roll(options.formula);
-    await roll.evaluate({ async: true });
-    if (options.flavor) {
-      await roll.toMessage({
-        speaker: options.speaker,
-        flavor: options.flavor,
-      });
-    } else {
-      await roll.toMessage({ speaker: options.speaker });
-    }
+  /** Wertet die Formel async aus und postet das Ergebnis als ChatMessage. */
+  static async roll(options: RollOptions): Promise<EvaluatedRoll> {
+    const roll = (await new Roll(options.formula).evaluate({ async: true })) as EvaluatedRoll;
+    const messageOptions: Record<string, unknown> = { speaker: options.speaker };
+    if (options.flavor) messageOptions.flavor = options.flavor;
+    await roll.toMessage(messageOptions);
     return roll;
   }
 
-  static async rollAttribute(options: AttributeRollOptions): Promise<unknown> {
+  /** Wertet eine Formel aus, OHNE eine ChatMessage zu erzeugen. */
+  static async evaluate(formula: string): Promise<EvaluatedRoll> {
+    return (await new Roll(formula).evaluate({ async: true })) as EvaluatedRoll;
+  }
+
+  /**
+   * Postet einen bereits evaluierten Roll. Wichtig, um Dice-So-Nice zu triggern,
+   * wenn AttackService / SpellCastService den Wurf vorher selbst evaluiert haben.
+   */
+  static async postRoll(roll: EvaluatedRoll, options: MessageRollOptions = {}): Promise<unknown> {
+    const messageOptions: Record<string, unknown> = { speaker: options.speaker };
+    if (options.flavor) messageOptions.flavor = options.flavor;
+    return roll.toMessage(messageOptions);
+  }
+
+  static async rollAttribute(options: AttributeRollOptions): Promise<EvaluatedRoll> {
     const formula = RollFormulaBuilder.d20WithModifier(
       options.modifier,
       options.bonus ?? 0,
@@ -38,10 +62,7 @@ export class RollManager {
     });
   }
 
-  /**
-   * Führt einen Stabilitätswurf gegen eine DC aus und liefert das ausgewertete Ergebnis.
-   * Die Konsequenzlogik (Wild Magic / Implosion / Fizzle) bleibt im StabilityCheckService.
-   */
+  /** Stabilitätswurf inkl. Outcome-Klassifikation. Wurf wird via toMessage gepostet. */
   static async rollStabilityCheck(
     modifier: number,
     dc: number,
@@ -49,10 +70,7 @@ export class RollManager {
     speaker?: unknown,
   ): Promise<StabilityCheckResult> {
     const formula = RollFormulaBuilder.d20WithModifier(modifier);
-    const roll = (await RollManager.roll({ formula, flavor, speaker })) as {
-      total: number;
-      dice: Array<{ results: Array<{ result: number }> }>;
-    };
+    const roll = await RollManager.roll({ formula, flavor, speaker });
 
     const total = Number(roll.total ?? 0);
     const naturalRoll = roll.dice?.[0]?.results?.[0]?.result ?? 0;

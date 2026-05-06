@@ -410,6 +410,35 @@
   opacity: 0.6;
 }
 
+/* -------------------- Suche im Rucksack -------------------- */
+
+.loa-search-wrap {
+  margin-bottom: 10px;
+}
+
+.loa-search {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  border: 1px solid var(--loa-leather);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 230, 0.9), rgba(220, 200, 165, 0.55));
+  color: var(--loa-ink);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.loa-search::placeholder {
+  color: var(--loa-leather);
+  opacity: 0.65;
+}
+
+.loa-search:focus {
+  outline: none;
+  border-color: var(--loa-gold);
+  box-shadow: 0 0 0 2px rgba(201, 164, 88, 0.35);
+}
+
 /* -------------------- Backpack (Rucksack) ------------------- */
 
 .loa-backpack {
@@ -789,6 +818,48 @@
   padding: 4px 6px;
   border-left: 2px solid var(--loa-gold, #a3812e);
   margin: 2px 0;
+}
+
+.loa-pending-damage {
+  border: 1px solid var(--loa-leather, #6b4423);
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, rgba(255, 240, 210, 0.5), rgba(220, 200, 165, 0.3));
+}
+
+.loa-pending-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.loa-pending-actions button {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--loa-leather-dark, #3a2418);
+  background: linear-gradient(180deg, var(--loa-gold-light, #c9a458), var(--loa-gold, #a3812e));
+  color: var(--loa-ink, #2a1810);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.loa-pending-actions button:hover {
+  filter: brightness(1.08);
+}
+
+.loa-pending-resolved {
+  margin-top: 6px;
+  font-style: italic;
+  color: var(--loa-ink-soft, #4a3424);
+}
+
+.loa-pending-reaction {
+  margin: 4px 0 0;
+  padding: 4px 6px;
+  background: rgba(168, 130, 80, 0.2);
+  border-radius: 4px;
 }
 
 @keyframes loaFadeIn {

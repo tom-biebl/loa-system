@@ -75,12 +75,14 @@
                 <span class="loa-ac-value">{{viewModel.ac.value}}</span>
               </div>
               <div class="loa-ac-detail">
-                <p>Basis {{viewModel.ac.base}}</p>
-                {{#if viewModel.equippedArmor}}
-                  <p>Rüstung +{{viewModel.equippedArmor.acBonus}} ({{viewModel.equippedArmor.name}})</p>
-                {{else}}
-                  <p class="loa-muted">Keine Rüstung getragen.</p>
+                <p>Rüstung +{{viewModel.ac.armor}}</p>
+                <p>Dex {{#if (gt viewModel.ac.dex 0)}}+{{/if}}{{viewModel.ac.dex}}</p>
+                {{#if viewModel.ac.bonus}}
+                  <p>Bonus {{#if (gt viewModel.ac.bonus 0)}}+{{/if}}{{viewModel.ac.bonus}}</p>
                 {{/if}}
+                {{#unless viewModel.equippedArmor}}
+                  <p class="loa-muted">Keine Rüstung getragen.</p>
+                {{/unless}}
               </div>
             </div>
           </div>
@@ -117,11 +119,23 @@
                 {{viewModel.inventory.used}} / {{viewModel.inventory.capacity}} Slots belegt
               </span>
             </h2>
+            <div class="loa-search-wrap">
+              <input
+                type="search"
+                class="loa-search"
+                data-loa-search="backpack"
+                placeholder="Im Rucksack suchen…"
+                autocomplete="off"
+              />
+            </div>
             <div class="loa-backpack loa-dropzone" data-drop-zone="backpack">
               <div class="loa-backpack-grid">
                 {{#each viewModel.inventory.slots as |slot|}}
                   {{#if slot.item}}
-                    <div class="loa-slot filled loa-draggable" data-item-id="{{slot.item.id}}" title="{{slot.item.name}}">
+                    <div class="loa-slot filled loa-draggable"
+                         data-item-id="{{slot.item.id}}"
+                         data-search-haystack="{{slot.item.name}} {{slot.item.type}} {{slot.item.description}}"
+                         title="{{slot.item.name}}">
                       <img src="{{slot.item.img}}" data-action="open-item" />
                       <span class="loa-slot-name">{{slot.item.name}}</span>
                       {{#if (eq slot.item.type 'weapon')}}
@@ -133,7 +147,7 @@
                       <button type="button" class="loa-slot-trash" data-action="delete-item" data-item-id="{{slot.item.id}}" title="Löschen">✕</button>
                     </div>
                   {{else}}
-                    <div class="loa-slot empty">
+                    <div class="loa-slot empty" data-search-empty="1">
                       <span class="loa-slot-empty">·</span>
                     </div>
                   {{/if}}

@@ -39,6 +39,16 @@ interface HealChatPayload {
   max: number;
 }
 
+interface PendingDamageFlagsLike {
+  attackerName: string;
+  targetName: string;
+  source: string;
+  damage: number;
+  damageType: string;
+  reactionUsed: string | null;
+  resolved: boolean;
+}
+
 /**
  * Erzeugt Chat-Karten als ChatMessage. HTML wird hier zentral gebaut, damit
  * andere Services keine Markup-Strings duplizieren.
@@ -114,6 +124,26 @@ export class ChatCardRenderer {
       `<p>HP: ${payload.remaining} / ${payload.max}</p>` +
       `</div>`;
     return ChatMessage.create({ flavor: SYSTEM_LABEL, content: html });
+  }
+
+  /** HTML für eine Pending-Damage-Karte. Buttons werden via chatHooks angebunden. */
+  static buildPendingDamage(flags: PendingDamageFlagsLike): string {
+    const reaction = flags.reactionUsed
+      ? `<p class="loa-pending-reaction"><em>Reaktion: ${flags.reactionUsed}</em></p>`
+      : "";
+    const buttons = flags.resolved
+      ? `<p class="loa-pending-resolved">Schaden angewendet.</p>`
+      : `<div class="loa-pending-actions">
+          <button type="button" data-loa-action="react">Reagieren</button>
+          <button type="button" data-loa-action="apply-damage">Schaden anwenden</button>
+        </div>`;
+    return `<div class="loa-chat-card loa-pending-damage" data-loa-pending="1">
+      <header class="loa-chat-header"><strong>${flags.attackerName}</strong> trifft <strong>${flags.targetName}</strong></header>
+      <p>Quelle: ${flags.source}</p>
+      <p>Eingehender Schaden: <strong>${flags.damage}</strong> ${flags.damageType}</p>
+      ${reaction}
+      ${buttons}
+    </div>`;
   }
 
   static async renderHeal(payload: HealChatPayload): Promise<unknown> {

@@ -27,7 +27,6 @@ export interface PointBuyData {
 }
 
 export interface ArmorClassData {
-  base: number;
   bonus: number;
   value: number;
 }

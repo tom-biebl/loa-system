@@ -8,6 +8,7 @@ import { Logger } from "../utils/Logger.js";
 import { InitiativeService } from "../combat/InitiativeService.js";
 import { WildMagicTableInstaller } from "../magic/WildMagicTableInstaller.js";
 import { registerCombatHooks } from "./combatHooks.js";
+import { registerChatHooks } from "./chatHooks.js";
 
 /**
  * Zentrale Hook-Registrierung. Andere Module sollen NICHT direkt
@@ -17,6 +18,7 @@ export function registerHooks(): void {
   Hooks.once("init", onInit);
   Hooks.once("ready", onReady);
   registerCombatHooks();
+  registerChatHooks();
 }
 
 function onInit(): void {

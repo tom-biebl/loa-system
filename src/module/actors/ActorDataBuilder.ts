@@ -59,7 +59,7 @@ export interface ActorSheetViewModel {
   resources: ResourceViewModel[];
   pointBuy: { spent: number; remaining: number; total: number };
   resonance: ReturnType<typeof ResonanceManager.evaluate>;
-  ac: { base: number; bonus: number; value: number };
+  ac: { bonus: number; value: number; dex: number; armor: number };
   actionEconomy: {
     actions: { value: number; max: number };
     bonusActions: { value: number; max: number };
@@ -137,9 +137,10 @@ export class ActorDataBuilder {
       },
       resonance: ResonanceManager.evaluate(resonanceValue),
       ac: {
-        base: system.ac?.base ?? 10,
         bonus: system.ac?.bonus ?? 0,
-        value: system.ac?.value ?? 10,
+        value: system.ac?.value ?? 0,
+        dex: system.attributes?.dex?.modifier ?? 0,
+        armor: ActorDataBuilder.sumEquippedArmor(allItems),
       },
       actionEconomy: {
         actions: system.actionEconomy?.actions ?? { value: 1, max: 1 },
@@ -178,6 +179,12 @@ export class ActorDataBuilder {
     }
 
     return { capacity, used, free: Math.max(0, capacity - used), slots };
+  }
+
+  private static sumEquippedArmor(items: any[]): number {
+    return items
+      .filter((it) => it.type === "armor" && it.system?.equipped)
+      .reduce((sum, it) => sum + Number(it.system?.acBonus ?? 0), 0);
   }
 
   private static findEquippedArmor(items: any[]): ArmorVM | null {

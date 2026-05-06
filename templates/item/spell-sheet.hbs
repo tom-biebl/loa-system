@@ -43,6 +43,14 @@
       <label>Angriffsbonus
         <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
       </label>
+      <label>Aktionskosten
+        <select name="system.actionCost">
+          <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
+          <option value="bonus"    {{#if (eq system.actionCost 'bonus')}}selected{{/if}}>Bonusaktion</option>
+          <option value="reaction" {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
+          <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
+        </select>
+      </label>
     </div>
 
     <label>Beschreibung</label>

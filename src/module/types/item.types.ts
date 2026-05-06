@@ -1,5 +1,7 @@
 import type { AttributeKey } from "../constants/system.constants.js";
 
+export type ActionCost = "action" | "bonus" | "reaction" | "free";
+
 interface BaseItemData {
   description: string;
   /** Belegte Rucksack-Slots. Nicht alle Items zählen (Spells/Abilities = 0). */
@@ -13,6 +15,7 @@ export interface WeaponSystemData extends BaseItemData {
   attribute: AttributeKey;
   range: string;
   properties: string;
+  actionCost: ActionCost;
 }
 
 export interface ArmorSystemData extends BaseItemData {
@@ -30,11 +33,13 @@ export interface SpellSystemData extends BaseItemData {
   range: string;
   attribute: AttributeKey;
   attackBonus: number;
+  actionCost: ActionCost;
   isCantrip: boolean;
 }
 
 export interface AbilitySystemData extends BaseItemData {
-  action: "action" | "bonus" | "reaction" | "free";
+  actionCost: ActionCost;
+  damageReduction: number;
   cooldown: string;
 }
 

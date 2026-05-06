@@ -6,6 +6,8 @@ import { ResourceManager } from "../resources/ResourceManager.js";
 import { Logger } from "../utils/Logger.js";
 import { RollManager } from "../rolls/RollManager.js";
 
+const HP_PER_CON_POINT = 10;
+
 /**
  * Foundry Actor-Subklasse. Hält bewusst nur Komfortmethoden.
  * Spielregeln liegen in Services (AttributeService, ResourceManager, ...).
@@ -18,18 +20,27 @@ export class LoAActor extends Actor {
     if (this.system?.attributes) {
       AttributeService.deriveModifiers(this.system.attributes);
     }
+    LoAActor.deriveHitPoints(this);
     LoAActor.deriveArmorClass(this);
   }
 
+  /** HP-Max ergibt sich aus Constitution: 1 Con-Punkt = 10 HP. Aktueller Wert wird geclampt. */
+  static deriveHitPoints(actor: LoAActor): void {
+    const con = actor.system.attributes?.con?.value ?? 10;
+    const hp = actor.system.resources?.hp;
+    if (!hp) return;
+    hp.max = Math.max(0, Number(con) * HP_PER_CON_POINT);
+    if (hp.value > hp.max) hp.value = hp.max;
+    if (hp.value < 0) hp.value = 0;
+  }
+
   /**
-   * AC = base + Dex-Modifier + Summe(equipped armor.acBonus) + ac.bonus.
-   * Dex-Modifier wird mit-eingerechnet, kann aber durch Sheets / Effekte
-   * über `system.ac.bonus` (negativ) gekontert werden.
+   * AC = Dex-Modifier + Summe(equipped armor.acBonus) + manueller Bonus.
+   * Es gibt KEINE Base-AC — wer keine Rüstung trägt und 0 Dex hat, hat AC 0.
    */
   static deriveArmorClass(actor: LoAActor): void {
     const ac = actor.system.ac;
     if (!ac) return;
-    const base = Number(ac.base ?? 10);
     const flat = Number(ac.bonus ?? 0);
     const dex = actor.system.attributes?.dex?.modifier ?? 0;
     let armor = 0;
@@ -42,7 +53,7 @@ export class LoAActor extends Actor {
         armor += Number(item.system?.acBonus ?? 0);
       }
     }
-    ac.value = base + flat + dex + armor;
+    ac.value = flat + dex + armor;
   }
 
   getResource(key: string): LoAResource | undefined {

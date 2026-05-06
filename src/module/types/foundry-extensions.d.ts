@@ -58,6 +58,7 @@ declare class ItemSheet {
 
 declare class Roll {
   total: number;
+  formula: string;
   dice: Array<{ results: Array<{ result: number }> }>;
   constructor(formula: string, data?: AnyObject);
   evaluate(options?: { async?: boolean }): Promise<this>;
@@ -98,6 +99,13 @@ declare class RollTable {
   results: any;
   draw(options?: AnyObject): Promise<{ results: Array<{ text?: string; getChatText?: () => string }> }>;
   static create(data: AnyObject): Promise<RollTable>;
+}
+
+declare class Dialog {
+  constructor(data: AnyObject, options?: AnyObject);
+  render(force?: boolean): this;
+  static prompt(opts: AnyObject): Promise<unknown>;
+  static confirm(opts: AnyObject): Promise<boolean>;
 }
 
 declare const game: any;

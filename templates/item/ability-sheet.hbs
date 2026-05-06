@@ -1,0 +1,35 @@
+<form class="{{cssClass}} loa-item-sheet loa-ability-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">Fähigkeit</span>
+    </div>
+  </header>
+
+  <section class="loa-item-body">
+    <div class="loa-field-grid">
+      <label>Aktionskosten
+        <select name="system.actionCost">
+          <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
+          <option value="bonus"    {{#if (eq system.actionCost 'bonus')}}selected{{/if}}>Bonusaktion</option>
+          <option value="reaction" {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
+          <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
+        </select>
+      </label>
+      <label>Schadensreduktion (Reaktion)
+        <input name="system.damageReduction" type="number" min="0" value="{{system.damageReduction}}" />
+      </label>
+      <label>Cooldown
+        <input name="system.cooldown" type="text" value="{{system.cooldown}}" />
+      </label>
+    </div>
+
+    <p class="loa-muted loa-mini">
+      Reaktion mit Schadensreduktion {{system.damageReduction}} reduziert eingehenden Schaden, wenn das Ziel im Pending-Damage-Workflow „Reagieren" wählt.
+    </p>
+
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

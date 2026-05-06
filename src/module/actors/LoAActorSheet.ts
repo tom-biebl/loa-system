@@ -57,6 +57,35 @@ export class LoAActorSheet extends ActorSheet {
 
     this.bindAttributeRolls(root);
     this.bindItemActions(root);
+    this.bindBackpackSearch(root);
+  }
+
+  /** Volltextsuche über Item-Name/Type/Description im Rucksack. */
+  private bindBackpackSearch(root: HTMLElement): void {
+    const input = root.querySelector(
+      "[data-loa-search='backpack']",
+    ) as HTMLInputElement | null;
+    if (!input) return;
+    const grid = root.querySelector(".loa-backpack-grid") as HTMLElement | null;
+    if (!grid) return;
+
+    const apply = (query: string): void => {
+      const needle = query.trim().toLowerCase();
+      const slots = grid.querySelectorAll<HTMLElement>(".loa-slot");
+      slots.forEach((slot) => {
+        if (slot.dataset.searchEmpty === "1") {
+          slot.style.display = needle ? "none" : "";
+          return;
+        }
+        const haystack = (slot.dataset.searchHaystack ?? "").toLowerCase();
+        const match = !needle || haystack.includes(needle);
+        slot.style.display = match ? "" : "none";
+      });
+    };
+
+    input.addEventListener("input", (event) => {
+      apply((event.target as HTMLInputElement).value);
+    });
   }
 
   /** Foundry ruft das beim Drop auf eine .loa-dropzone auf. */
