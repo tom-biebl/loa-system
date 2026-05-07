@@ -48,6 +48,18 @@ interface WeaponVM extends InventoryItemVM {
   range: string;
 }
 
+interface AbilityVM extends InventoryItemVM {
+  effectKind: "damage" | "heal" | "utility";
+  effectKindLabel: string;
+  actionCost: "action" | "bonus" | "reaction" | "free";
+  actionCostLabel: string;
+  isReaction: boolean;
+  damage: string;
+  damageType: string;
+  healFormula: string;
+  damageReduction: number;
+}
+
 interface ArmorVM extends InventoryItemVM {
   acBonus: number;
   armorType: string;
@@ -74,6 +86,7 @@ export interface ActorSheetViewModel {
   equippedArmor: ArmorVM | null;
   spellbook: SpellVM[];
   weapons: WeaponVM[];
+  abilities: AbilityVM[];
 }
 
 const RESOURCE_LABELS: Record<string, string> = {
@@ -126,6 +139,7 @@ export class ActorDataBuilder {
     const equippedArmor = ActorDataBuilder.findEquippedArmor(allItems);
     const spellbook = ActorDataBuilder.buildSpellbook(allItems);
     const weapons = ActorDataBuilder.buildWeapons(allItems);
+    const abilities = ActorDataBuilder.buildAbilities(allItems);
 
     return {
       attributes,
@@ -151,6 +165,7 @@ export class ActorDataBuilder {
       equippedArmor,
       spellbook,
       weapons,
+      abilities,
     };
   }
 
@@ -209,6 +224,38 @@ export class ActorDataBuilder {
         damage: String(spell.system?.damage ?? ""),
         attribute: (spell.system?.attribute ?? "int") as AttributeKey,
       }));
+  }
+
+  private static buildAbilities(items: any[]): AbilityVM[] {
+    const kindLabels: Record<string, string> = {
+      damage: "Schaden",
+      heal: "Heilung",
+      utility: "Utility",
+    };
+    const costLabels: Record<string, string> = {
+      action: "Aktion",
+      bonus: "Bonus",
+      reaction: "Reaktion",
+      free: "Kostenlos",
+    };
+    return items
+      .filter((it) => it.type === "ability")
+      .map((ability) => {
+        const effectKind = (ability.system?.effectKind ?? "utility") as AbilityVM["effectKind"];
+        const actionCost = (ability.system?.actionCost ?? "action") as AbilityVM["actionCost"];
+        return {
+          ...ActorDataBuilder.toItemVM(ability),
+          effectKind,
+          effectKindLabel: kindLabels[effectKind] ?? effectKind,
+          actionCost,
+          actionCostLabel: costLabels[actionCost] ?? actionCost,
+          isReaction: actionCost === "reaction",
+          damage: String(ability.system?.damage ?? ""),
+          damageType: String(ability.system?.damageType ?? "physical"),
+          healFormula: String(ability.system?.healFormula ?? ""),
+          damageReduction: Number(ability.system?.damageReduction ?? 0),
+        };
+      });
   }
 
   private static buildWeapons(items: any[]): WeaponVM[] {

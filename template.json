@@ -77,8 +77,10 @@
       "resonanceCost": 2,
       "generatesResonance": true,
       "level": 1,
+      "effectKind": "damage",
       "damage": "",
       "damageType": "arcane",
+      "healFormula": "",
       "range": "30 ft.",
       "attribute": "int",
       "attackBonus": 0,
@@ -89,6 +91,10 @@
     "ability": {
       "templates": ["describable"],
       "actionCost": "action",
+      "effectKind": "utility",
+      "damage": "",
+      "damageType": "physical",
+      "healFormula": "",
       "damageReduction": 0,
       "cooldown": "",
       "slots": 0

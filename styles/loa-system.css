@@ -36,12 +36,15 @@
 
 .loa-character-sheet {
   height: 100%;
+  container-type: inline-size;
+  container-name: loasheet;
 }
 
 .loa-shell {
   display: grid;
   grid-template-columns: 280px 1fr;
   height: 100%;
+  min-height: 0;
 }
 
 /* -------------------- Sidebar (Leder) ----------------------- */
@@ -186,7 +189,7 @@
 
 .loa-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
 
@@ -272,7 +275,7 @@
 
 .loa-attributes {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 10px;
 }
 
@@ -463,7 +466,7 @@
 
 .loa-backpack-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
   gap: 8px;
 }
 
@@ -595,6 +598,81 @@
   color: var(--loa-leather-dark);
 }
 
+/* -------------------- Fähigkeiten --------------------------- */
+
+.loa-ability-list {
+  display: grid;
+  gap: 8px;
+}
+
+.loa-ability-row {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 250, 230, 0.5);
+  border: 1px solid var(--loa-leather);
+}
+
+.loa-ability-row img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--loa-leather-light);
+  cursor: pointer;
+}
+
+.loa-ability-meta strong {
+  display: block;
+  color: var(--loa-leather-dark);
+}
+
+.loa-pill-muted {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--loa-leather-dark);
+  border-color: var(--loa-leather-light);
+}
+
+.loa-effect-fields {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--loa-leather);
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.45);
+}
+
+.loa-effect-fields legend {
+  padding: 0 6px;
+  font-weight: 600;
+  color: var(--loa-leather-dark);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.loa-effect-reaction {
+  border-color: var(--loa-blood);
+  background: rgba(139, 58, 46, 0.1);
+}
+
+.loa-chat-description {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: rgba(255, 250, 230, 0.55);
+  border-left: 2px solid var(--loa-gold);
+  border-radius: 4px;
+}
+
+.loa-chat-heal-info {
+  background: rgba(120, 170, 100, 0.15);
+  padding: 4px 8px;
+  border-left: 2px solid #5a8a3e;
+  border-radius: 4px;
+}
+
 /* -------------------- Spellbook ----------------------------- */
 
 .loa-spellbook {
@@ -622,7 +700,7 @@
 
 .loa-spell-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 10px;
 }
 
@@ -764,7 +842,7 @@
 
 .loa-field-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -870,5 +948,198 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* -------------------- Responsive ---------------------------- */
+
+/* Mittlere Breite: Sidebar bleibt links, aber etwas schmaler. */
+@container loasheet (max-width: 920px) {
+  .loa-shell {
+    grid-template-columns: 220px 1fr;
+  }
+  .loa-portrait-wrap {
+    width: 150px;
+    height: 150px;
+  }
+  .loa-content {
+    padding: 16px;
+  }
+}
+
+/* Schmal: Sidebar wandert nach oben, Tabs werden horizontal. */
+@container loasheet (max-width: 700px) {
+  .loa-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .loa-sidebar {
+    border-right: none;
+    border-bottom: 2px solid var(--loa-gold);
+    padding: 14px 12px;
+    box-shadow: inset 0 -6px 12px rgba(0, 0, 0, 0.3);
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    grid-template-areas:
+      "portrait header"
+      "portrait stats"
+      "tabs     tabs";
+    gap: 10px 14px;
+    align-items: start;
+  }
+  .loa-portrait-wrap {
+    grid-area: portrait;
+    width: 96px;
+    height: 96px;
+    margin: 0;
+  }
+  .loa-name,
+  .loa-subtitle {
+    grid-area: header;
+    margin: 0;
+  }
+  .loa-subtitle {
+    grid-area: header;
+    align-self: end;
+  }
+  .loa-stat-strip {
+    grid-area: stats;
+    margin-bottom: 0;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+  .loa-tabs {
+    grid-area: tabs;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+    gap: 6px;
+  }
+  .loa-tabs .item {
+    padding: 8px 6px;
+    font-size: 12px;
+    text-align: center;
+  }
+  .loa-tabs .item:hover {
+    transform: none;
+  }
+  .loa-content {
+    padding: 14px;
+  }
+  .loa-card {
+    padding: 14px;
+  }
+}
+
+/* Sehr schmal: kompakte Pills, keine Cost-Texte, AC-Schild kleiner. */
+@container loasheet (max-width: 460px) {
+  .loa-shell {
+    grid-template-columns: 1fr;
+  }
+  .loa-sidebar {
+    grid-template-columns: 72px 1fr;
+  }
+  .loa-portrait-wrap {
+    width: 72px;
+    height: 72px;
+  }
+  .loa-name {
+    font-size: 16px;
+    padding: 6px;
+  }
+  .loa-stat-strip {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 6px;
+  }
+  .loa-stat {
+    padding: 6px;
+  }
+  .loa-stat-value {
+    font-size: 14px;
+  }
+  .loa-content {
+    padding: 10px;
+  }
+  .loa-card {
+    padding: 12px;
+  }
+  .loa-card h2 {
+    font-size: 15px;
+  }
+  .loa-attr {
+    padding: 8px 4px;
+  }
+  .loa-attr input {
+    font-size: 16px;
+  }
+  .loa-attr .loa-cost {
+    display: none;
+  }
+  .loa-ac-display {
+    grid-template-columns: 64px 1fr;
+  }
+  .loa-ac-shield {
+    width: 64px;
+    height: 64px;
+  }
+  .loa-ac-value {
+    font-size: 24px;
+  }
+  .loa-weapon-row,
+  .loa-ability-row {
+    grid-template-columns: 40px 1fr;
+    grid-template-areas:
+      "img meta"
+      "btn btn";
+    gap: 8px;
+  }
+  .loa-weapon-row img,
+  .loa-ability-row img {
+    grid-area: img;
+    width: 40px;
+    height: 40px;
+  }
+  .loa-weapon-row .loa-weapon-meta,
+  .loa-ability-row .loa-ability-meta {
+    grid-area: meta;
+  }
+  .loa-weapon-row .loa-action-btn,
+  .loa-ability-row .loa-action-btn,
+  .loa-ability-row .loa-pill-muted {
+    grid-area: btn;
+    width: 100%;
+    text-align: center;
+  }
+  .loa-spell-tile {
+    grid-template-columns: 40px 1fr;
+    grid-template-areas:
+      "img meta"
+      "btn trash";
+    column-gap: 8px;
+  }
+  .loa-spell-tile img {
+    grid-area: img;
+  }
+  .loa-spell-tile .loa-spell-meta {
+    grid-area: meta;
+  }
+  .loa-spell-tile .loa-action-btn {
+    grid-area: btn;
+  }
+  .loa-armor-equipped {
+    grid-template-columns: 48px 1fr;
+    grid-template-areas:
+      "img meta"
+      "btn btn";
+  }
+  .loa-armor-equipped img {
+    grid-area: img;
+    width: 48px;
+    height: 48px;
+  }
+  .loa-armor-equipped .loa-armor-meta {
+    grid-area: meta;
+  }
+  .loa-armor-equipped .loa-action-btn {
+    grid-area: btn;
   }
 }

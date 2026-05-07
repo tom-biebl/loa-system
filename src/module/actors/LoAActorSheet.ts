@@ -211,6 +211,11 @@ export class LoAActorSheet extends ActorSheet {
             if (!item) return;
             await item.attack?.();
             return;
+          case "use-ability":
+            event.preventDefault();
+            if (!item) return;
+            await item.useAbility?.();
+            return;
           case "unequip-armor":
             event.preventDefault();
             if (!item) return;

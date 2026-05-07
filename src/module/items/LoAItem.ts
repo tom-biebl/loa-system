@@ -8,6 +8,7 @@ import type {
 import { Logger } from "../utils/Logger.js";
 import { SpellCastService } from "../magic/SpellCastService.js";
 import { AttackService } from "../combat/AttackService.js";
+import { AbilityUseService } from "../abilities/AbilityUseService.js";
 import { ACTION_COST_LABELS, ActionEconomyService } from "../combat/ActionEconomy.js";
 import type { LoAActor } from "../actors/LoAActor.js";
 
@@ -26,6 +27,10 @@ export class LoAItem extends Item {
 
   isWeapon(): this is LoAItem & { system: WeaponSystemData } {
     return this.type === "weapon";
+  }
+
+  isAbility(): boolean {
+    return this.type === "ability";
   }
 
   /** Action-Cost des Items. Default `action`, falls nicht gesetzt. */
@@ -62,6 +67,27 @@ export class LoAItem extends Item {
     }
     if (!(await this.consumeActionCost(actor))) return;
     await AttackService.rollWeaponAttack(actor, this);
+  }
+
+  /** Verwendet eine Ability vom Sheet aus (kein Resonance-Flow). */
+  async useAbility(): Promise<void> {
+    if (!this.isAbility()) {
+      Logger.warn("useAbility called on non-ability item", { itemId: this.id });
+      return;
+    }
+    const actor = this.actor;
+    if (!actor) {
+      ui.notifications?.warn("Fähigkeit benötigt einen Charakter.");
+      return;
+    }
+    if (this.getActionCost() === "reaction") {
+      ui.notifications?.info(
+        "Reaktionen werden nur über die Pending-Damage-Karte ausgelöst.",
+      );
+      return;
+    }
+    if (!(await this.consumeActionCost(actor))) return;
+    await AbilityUseService.use(actor, this);
   }
 
   /** Versucht, die nötige Action-Slot zu verbrauchen. False = nicht genug verfügbar. */

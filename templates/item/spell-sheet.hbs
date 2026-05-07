@@ -10,6 +10,21 @@
 
   <section class="loa-item-body">
     <div class="loa-field-grid">
+      <label>Effekt-Art
+        <select name="system.effectKind">
+          <option value="damage"  {{#if (eq system.effectKind 'damage')}}selected{{/if}}>Schaden</option>
+          <option value="heal"    {{#if (eq system.effectKind 'heal')}}selected{{/if}}>Heilung</option>
+          <option value="utility" {{#if (eq system.effectKind 'utility')}}selected{{/if}}>Utility (Chat)</option>
+        </select>
+      </label>
+      <label>Aktionskosten
+        <select name="system.actionCost">
+          <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
+          <option value="bonus"    {{#if (eq system.actionCost 'bonus')}}selected{{/if}}>Bonusaktion</option>
+          <option value="reaction" {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
+          <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
+        </select>
+      </label>
       <label>Stufe
         <input name="system.level" type="number" min="0" value="{{system.level}}" />
       </label>
@@ -24,12 +39,6 @@
         <input name="system.generatesResonance" type="checkbox" {{#if system.generatesResonance}}checked{{/if}} />
         Erzeugt Resonanz
       </label>
-      <label>Schaden
-        <input name="system.damage" type="text" value="{{system.damage}}" />
-      </label>
-      <label>Schadensart
-        <input name="system.damageType" type="text" value="{{system.damageType}}" />
-      </label>
       <label>Reichweite
         <input name="system.range" type="text" value="{{system.range}}" />
       </label>
@@ -40,18 +49,42 @@
           <option value="cha" {{#if (eq system.attribute 'cha')}}selected{{/if}}>Charisma</option>
         </select>
       </label>
-      <label>Angriffsbonus
-        <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
-      </label>
-      <label>Aktionskosten
-        <select name="system.actionCost">
-          <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
-          <option value="bonus"    {{#if (eq system.actionCost 'bonus')}}selected{{/if}}>Bonusaktion</option>
-          <option value="reaction" {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
-          <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
-        </select>
-      </label>
     </div>
+
+    {{#if (eq system.effectKind 'damage')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Schaden</legend>
+        <div class="loa-field-grid">
+          <label>Formel
+            <input name="system.damage" type="text" value="{{system.damage}}" placeholder="1d8 + 2" />
+          </label>
+          <label>Schadensart
+            <input name="system.damageType" type="text" value="{{system.damageType}}" />
+          </label>
+          <label>Angriffsbonus
+            <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'heal')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Heilung</legend>
+        <div class="loa-field-grid">
+          <label>Heilungs-Formel
+            <input name="system.healFormula" type="text" value="{{system.healFormula}}" placeholder="1d8 + 3" />
+          </label>
+        </div>
+        <p class="loa-muted loa-mini">Heilt das anvisierte Token oder den Wirkenden, wenn nichts anvisiert ist.</p>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'utility')}}
+      <p class="loa-muted loa-mini">
+        Utility-Zauber posten nur eine Chat-Nachricht mit der Beschreibung. Kein Schaden, keine Heilung.
+      </p>
+    {{/if}}
 
     <label>Beschreibung</label>
     <textarea name="system.description">{{system.description}}</textarea>

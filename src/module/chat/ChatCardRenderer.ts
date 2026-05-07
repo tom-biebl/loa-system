@@ -3,17 +3,26 @@ import type {
   ResonanceCheckResult,
   StabilityCheckResult,
 } from "../types/roll.types.js";
+import type { EffectKind } from "../types/item.types.js";
 import type { AttackResult } from "../combat/AttackService.js";
+
+export interface HealOutcome {
+  subjectName: string;
+  amount: number;
+}
 
 interface SpellCastChatPayload {
   speaker?: unknown;
   spellName: string;
   spellImg?: string;
+  effectKind: EffectKind;
+  description: string;
   resonanceTotal: number;
   resonanceCheck: ResonanceCheckResult;
   stabilityResult: StabilityCheckResult | null;
   consequence: string | null;
   attacks: AttackResult[];
+  heal: HealOutcome | null;
 }
 
 interface AttackChatPayload {
@@ -39,6 +48,14 @@ interface HealChatPayload {
   max: number;
 }
 
+interface UtilityChatPayload {
+  speaker?: unknown;
+  actorName: string;
+  itemName: string;
+  itemImg?: string;
+  description: string;
+}
+
 interface PendingDamageFlagsLike {
   attackerName: string;
   targetName: string;
@@ -57,8 +74,8 @@ export class ChatCardRenderer {
   static async renderSpellCast(payload: SpellCastChatPayload): Promise<unknown> {
     const lines: string[] = [];
     const header = payload.spellImg
-      ? `<header class="loa-chat-header"><img src="${payload.spellImg}" /><strong>${payload.spellName}</strong></header>`
-      : `<header class="loa-chat-header"><strong>${payload.spellName}</strong></header>`;
+      ? `<header class="loa-chat-header"><img src="${payload.spellImg}" /><strong>${payload.spellName}</strong> · ${ChatCardRenderer.kindLabel(payload.effectKind)}</header>`
+      : `<header class="loa-chat-header"><strong>${payload.spellName}</strong> · ${ChatCardRenderer.kindLabel(payload.effectKind)}</header>`;
     lines.push(header);
     lines.push(`<p>Resonanz nach Wirkung: <strong>${payload.resonanceTotal}</strong></p>`);
 
@@ -76,8 +93,18 @@ export class ChatCardRenderer {
       );
     }
 
-    if (payload.attacks.length > 0) {
+    if (payload.effectKind === "damage" && payload.attacks.length > 0) {
       lines.push(ChatCardRenderer.renderAttackList(payload.attacks));
+    }
+
+    if (payload.effectKind === "heal" && payload.heal) {
+      lines.push(
+        `<p class="loa-chat-heal-info">Heilung an <strong>${payload.heal.subjectName}</strong>: <strong>${payload.heal.amount}</strong> HP.</p>`,
+      );
+    }
+
+    if (payload.effectKind === "utility" && payload.description) {
+      lines.push(`<div class="loa-chat-description">${payload.description}</div>`);
     }
 
     if (payload.consequence) {
@@ -105,6 +132,31 @@ export class ChatCardRenderer {
     });
   }
 
+  static async renderUtility(payload: UtilityChatPayload): Promise<unknown> {
+    const header = payload.itemImg
+      ? `<header class="loa-chat-header"><img src="${payload.itemImg}" /><strong>${payload.actorName} · ${payload.itemName}</strong></header>`
+      : `<header class="loa-chat-header"><strong>${payload.actorName} · ${payload.itemName}</strong></header>`;
+    const description = payload.description
+      ? `<div class="loa-chat-description">${payload.description}</div>`
+      : "";
+    return ChatMessage.create({
+      speaker: payload.speaker,
+      flavor: SYSTEM_LABEL,
+      content: `<div class="loa-chat-card loa-chat-utility">${header}${description}</div>`,
+    });
+  }
+
+  private static kindLabel(kind: EffectKind): string {
+    switch (kind) {
+      case "damage":
+        return "Schaden";
+      case "heal":
+        return "Heilung";
+      case "utility":
+        return "Utility";
+    }
+  }
+
   private static renderAttackList(attacks: AttackResult[]): string {
     const items = attacks.map((a) => {
       if (a.targetName === null) {
@@ -115,15 +167,6 @@ export class ChatCardRenderer {
       return `<li><strong>${a.targetName}</strong> (AC ${a.targetAC}) — Wurf ${a.attackTotal} · <em>${status}</em>${dmg}</li>`;
     });
     return `<ul class="loa-chat-attacks">${items.join("")}</ul>`;
-  }
-
-  static async renderDamage(payload: DamageChatPayload): Promise<unknown> {
-    const html =
-      `<div class="loa-chat-card loa-chat-damage">` +
-      `<header class="loa-chat-header"><strong>${payload.actorName}</strong> erleidet ${payload.amount} ${payload.type}-Schaden.</header>` +
-      `<p>HP: ${payload.remaining} / ${payload.max}</p>` +
-      `</div>`;
-    return ChatMessage.create({ flavor: SYSTEM_LABEL, content: html });
   }
 
   /** HTML für eine Pending-Damage-Karte. Buttons werden via chatHooks angebunden. */
@@ -144,6 +187,15 @@ export class ChatCardRenderer {
       ${reaction}
       ${buttons}
     </div>`;
+  }
+
+  static async renderDamage(payload: DamageChatPayload): Promise<unknown> {
+    const html =
+      `<div class="loa-chat-card loa-chat-damage">` +
+      `<header class="loa-chat-header"><strong>${payload.actorName}</strong> erleidet ${payload.amount} ${payload.type}-Schaden.</header>` +
+      `<p>HP: ${payload.remaining} / ${payload.max}</p>` +
+      `</div>`;
+    return ChatMessage.create({ flavor: SYSTEM_LABEL, content: html });
   }
 
   static async renderHeal(payload: HealChatPayload): Promise<unknown> {

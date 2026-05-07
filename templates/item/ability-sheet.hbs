@@ -9,6 +9,13 @@
 
   <section class="loa-item-body">
     <div class="loa-field-grid">
+      <label>Effekt-Art
+        <select name="system.effectKind">
+          <option value="damage"  {{#if (eq system.effectKind 'damage')}}selected{{/if}}>Schaden</option>
+          <option value="heal"    {{#if (eq system.effectKind 'heal')}}selected{{/if}}>Heilung</option>
+          <option value="utility" {{#if (eq system.effectKind 'utility')}}selected{{/if}}>Utility (Chat)</option>
+        </select>
+      </label>
       <label>Aktionskosten
         <select name="system.actionCost">
           <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
@@ -17,17 +24,56 @@
           <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
         </select>
       </label>
-      <label>Schadensreduktion (Reaktion)
-        <input name="system.damageReduction" type="number" min="0" value="{{system.damageReduction}}" />
-      </label>
       <label>Cooldown
         <input name="system.cooldown" type="text" value="{{system.cooldown}}" />
       </label>
     </div>
 
-    <p class="loa-muted loa-mini">
-      Reaktion mit Schadensreduktion {{system.damageReduction}} reduziert eingehenden Schaden, wenn das Ziel im Pending-Damage-Workflow „Reagieren" wählt.
-    </p>
+    {{#if (eq system.actionCost 'reaction')}}
+      <fieldset class="loa-effect-fields loa-effect-reaction">
+        <legend>Reaktion</legend>
+        <div class="loa-field-grid">
+          <label>Schadensreduktion
+            <input name="system.damageReduction" type="number" min="0" value="{{system.damageReduction}}" />
+          </label>
+        </div>
+        <p class="loa-muted loa-mini">
+          Beim „Reagieren"-Klick auf eine Pending-Damage-Karte wird der eingehende Schaden um diesen Wert reduziert.
+        </p>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'damage')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Schaden</legend>
+        <div class="loa-field-grid">
+          <label>Formel
+            <input name="system.damage" type="text" value="{{system.damage}}" placeholder="2d6" />
+          </label>
+          <label>Schadensart
+            <input name="system.damageType" type="text" value="{{system.damageType}}" />
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'heal')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Heilung</legend>
+        <div class="loa-field-grid">
+          <label>Heilungs-Formel
+            <input name="system.healFormula" type="text" value="{{system.healFormula}}" placeholder="1d6 + 2" />
+          </label>
+        </div>
+        <p class="loa-muted loa-mini">Heilt das anvisierte Token oder den Anwender, wenn nichts anvisiert ist.</p>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'utility')}}
+      <p class="loa-muted loa-mini">
+        Utility-Fähigkeiten posten beim Verwenden nur eine Chat-Nachricht mit der Beschreibung.
+      </p>
+    {{/if}}
 
     <label>Beschreibung</label>
     <textarea name="system.description">{{system.description}}</textarea>

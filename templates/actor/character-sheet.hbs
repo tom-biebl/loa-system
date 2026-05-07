@@ -188,6 +188,33 @@
             <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
           </div>
         </div>
+
+        <div class="loa-card loa-card-wide">
+          <h2>Fähigkeiten</h2>
+          {{#if viewModel.abilities.length}}
+            <div class="loa-ability-list">
+              {{#each viewModel.abilities as |ability|}}
+                <div class="loa-ability-row" data-item-id="{{ability.id}}">
+                  <img src="{{ability.img}}" data-action="open-item" />
+                  <div class="loa-ability-meta">
+                    <strong>{{ability.name}}</strong>
+                    <span class="loa-muted">
+                      {{ability.effectKindLabel}} · {{ability.actionCostLabel}}
+                      {{#if ability.isReaction}} · -{{ability.damageReduction}} DR{{/if}}
+                    </span>
+                  </div>
+                  {{#unless ability.isReaction}}
+                    <button type="button" class="loa-action-btn" data-action="use-ability" data-item-id="{{ability.id}}">Verwenden</button>
+                  {{else}}
+                    <span class="loa-pill loa-pill-muted">Reaktiv</span>
+                  {{/unless}}
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="loa-muted">Keine Fähigkeiten angelegt. Lege ein Item vom Typ „ability" an.</p>
+          {{/if}}
+        </div>
       </section>
 
       {{!-- MAGIE --}}
