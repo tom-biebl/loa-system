@@ -8,8 +8,26 @@
       <input class="loa-name" name="name" type="text" value="{{actor.name}}" />
 
       <div class="loa-subtitle">
-        <span>{{actor.type}}</span>
+        <span>{{viewModel.class.label}}</span>
         <span>Level {{system.level}}</span>
+      </div>
+
+      <div class="loa-class-block">
+        <label class="loa-class-label">Klasse</label>
+        <select name="system.class.key" data-loa-action="class-change">
+          {{#each viewModel.class.options as |option|}}
+            <option value="{{option.key}}" {{#if (eq option.key ../viewModel.class.key)}}selected{{/if}}>{{option.label}}</option>
+          {{/each}}
+        </select>
+        {{#if viewModel.class.hasSubclasses}}
+          <label class="loa-class-label">Subklasse</label>
+          <select name="system.class.subclass">
+            <option value="" {{#unless viewModel.class.subclassKey}}selected{{/unless}}>— keine —</option>
+            {{#each viewModel.class.subclasses as |sub|}}
+              <option value="{{sub.key}}" {{#if (eq sub.key ../viewModel.class.subclassKey)}}selected{{/if}}>{{sub.label}}</option>
+            {{/each}}
+          </select>
+        {{/if}}
       </div>
 
       <div class="loa-stat-strip">
@@ -30,6 +48,7 @@
         <a class="item" data-tab="inventory">Rucksack</a>
         <a class="item" data-tab="combat">Kampf</a>
         <a class="item" data-tab="magic">Magie</a>
+        <a class="item" data-tab="experience">Erfahrung</a>
         <a class="item" data-tab="story">Story</a>
       </nav>
     </aside>
@@ -86,6 +105,81 @@
               </div>
             </div>
           </div>
+
+          {{#if viewModel.classResources.any}}
+            <div class="loa-card loa-card-wide">
+              <h2>Klassen-Ressourcen</h2>
+
+              {{#if viewModel.classResources.showResonance}}
+                <div class="loa-resource">
+                  <label>Resonanz</label>
+                  <div>
+                    <input name="system.resources.resonance.value" type="number" value="{{system.resources.resonance.value}}" />
+                    <span>/</span>
+                    <input name="system.resources.resonance.max" type="number" value="{{system.resources.resonance.max}}" />
+                  </div>
+                </div>
+              {{/if}}
+
+              {{#if viewModel.classResources.showSuperiorityDice}}
+                <div class="loa-resource">
+                  <label>Superiority Dice
+                    <input class="loa-superiority-die" name="system.resources.superiorityDice.dice" type="text" value="{{viewModel.classResources.superiorityDice.dice}}" />
+                  </label>
+                  <div>
+                    <input name="system.resources.superiorityDice.current" type="number" value="{{viewModel.classResources.superiorityDice.current}}" />
+                    <span>/</span>
+                    <input name="system.resources.superiorityDice.max" type="number" value="{{viewModel.classResources.superiorityDice.max}}" />
+                  </div>
+                </div>
+              {{/if}}
+
+              {{#if viewModel.classResources.showAmmo}}
+                <div class="loa-class-grid">
+                  <label>Pfeile
+                    <input name="system.resources.ammo.arrows" type="number" min="0" value="{{viewModel.classResources.ammo.arrows}}" />
+                  </label>
+                  <label>Bolzen
+                    <input name="system.resources.ammo.bolts" type="number" min="0" value="{{viewModel.classResources.ammo.bolts}}" />
+                  </label>
+                </div>
+              {{/if}}
+
+              {{#if viewModel.classResources.showSpecialAmmo}}
+                <div class="loa-special-ammo">
+                  <h3>Spezialmunition</h3>
+                  {{#if viewModel.classResources.specialAmmo.length}}
+                    <div class="loa-special-ammo-list">
+                      {{#each viewModel.classResources.specialAmmo as |ammo|}}
+                        <div class="loa-special-ammo-row" data-special-ammo-index="{{@index}}">
+                          <input data-loa-special-ammo-field="label" value="{{ammo.label}}" placeholder="Bezeichnung" />
+                          <input data-loa-special-ammo-field="type" value="{{ammo.type}}" placeholder="Typ-Key (z.B. silver_round)" />
+                          <input data-loa-special-ammo-field="amount" type="number" min="0" value="{{ammo.amount}}" />
+                          <button type="button" class="loa-slot-trash" data-loa-action="remove-special-ammo" title="Entfernen">✕</button>
+                        </div>
+                      {{/each}}
+                    </div>
+                  {{else}}
+                    <p class="loa-muted loa-mini">Noch keine Spezialmunition.</p>
+                  {{/if}}
+                  <button type="button" class="loa-action-btn" data-loa-action="add-special-ammo">+ Spezialmunition</button>
+                </div>
+              {{/if}}
+
+              {{#if viewModel.classResources.showPotions}}
+                <div class="loa-potion-belt">
+                  <h3>Tränkegürtel ({{viewModel.classResources.potions.slots}} Slots)</h3>
+                  <div class="loa-potion-grid">
+                    {{#each viewModel.classResources.potionSlotIndices as |idx|}}
+                      <div class="loa-potion-slot empty"><span>·</span></div>
+                    {{/each}}
+                  </div>
+                  <p class="loa-muted loa-mini">Drag &amp; Drop kommt mit dem nächsten Update.</p>
+                </div>
+              {{/if}}
+
+            </div>
+          {{/if}}
         </div>
       </section>
 
@@ -275,6 +369,68 @@
               <div class="loa-spellbook-empty">Zauber hierher ziehen</div>
             {{/if}}
           </div>
+        </div>
+      </section>
+
+      {{!-- ERFAHRUNG --}}
+      <section class="tab" data-group="primary" data-tab="experience">
+        <div class="loa-card loa-card-wide">
+          <h2>
+            Erfahrung
+            <span class="loa-muted loa-mini">{{viewModel.experience.totalCount}} Bereiche</span>
+          </h2>
+
+          <div class="loa-experience-add">
+            {{#if viewModel.experience.hasAvailable}}
+              <select data-loa-experience-pick>
+                <option value="">— Bereich wählen —</option>
+                {{#each viewModel.experience.available as |group|}}
+                  <optgroup label="{{group.category}}">
+                    {{#each group.areas as |area|}}
+                      <option value="{{area.key}}">{{area.label}}</option>
+                    {{/each}}
+                  </optgroup>
+                {{/each}}
+              </select>
+              <button type="button" class="loa-action-btn" data-loa-action="add-experience">+ Hinzufügen</button>
+            {{else}}
+              <p class="loa-muted loa-mini">Alle Bereiche sind bereits hinzugefügt.</p>
+            {{/if}}
+          </div>
+
+          {{#if viewModel.experience.groups.length}}
+            {{#each viewModel.experience.groups as |group|}}
+              <h3 class="loa-experience-group">{{group.category}}</h3>
+              <div class="loa-experience-list">
+                {{#each group.entries as |entry|}}
+                  <div class="loa-experience-row" data-experience-key="{{entry.key}}">
+                    <span class="loa-experience-name">{{entry.resolvedLabel}}</span>
+                    <input
+                      class="loa-experience-xp"
+                      type="number"
+                      min="0"
+                      value="{{entry.xp}}"
+                      data-loa-experience-xp="{{entry.key}}"
+                    />
+                    <span class="loa-experience-rank">{{entry.rankInfo.label}}</span>
+                    <span class="loa-experience-bonus">{{entry.bonusLabel}}</span>
+                    <button
+                      type="button"
+                      class="loa-slot-trash"
+                      data-loa-action="remove-experience"
+                      data-experience-key="{{entry.key}}"
+                      title="Entfernen"
+                    >✕</button>
+                  </div>
+                {{/each}}
+              </div>
+            {{/each}}
+          {{else}}
+            <p class="loa-muted">
+              Noch keine Erfahrungsbereiche. Wähle oben einen aus der Liste —
+              z.B. drei „Interessen" mit je 5 EP für den Charakterstart.
+            </p>
+          {{/if}}
         </div>
       </section>
 

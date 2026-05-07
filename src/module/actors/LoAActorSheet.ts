@@ -3,6 +3,8 @@ import { SYSTEM_ID } from "../constants/system.constants.js";
 import type { AttributeKey } from "../constants/system.constants.js";
 import { ActorDataBuilder } from "./ActorDataBuilder.js";
 import { InventoryService } from "../inventory/InventoryService.js";
+import { ClassManager } from "../classes/ClassManager.js";
+import { ExperienceService } from "../experience/ExperienceService.js";
 import { Logger } from "../utils/Logger.js";
 import type { LoAActor } from "./LoAActor.js";
 
@@ -58,6 +60,132 @@ export class LoAActorSheet extends ActorSheet {
     this.bindAttributeRolls(root);
     this.bindItemActions(root);
     this.bindBackpackSearch(root);
+    this.bindClassChange(root);
+    this.bindExperience(root);
+    this.bindSpecialAmmo(root);
+  }
+
+  /** Beim Klassenwechsel ggf. ungültige Subklasse zurücksetzen. */
+  private bindClassChange(root: HTMLElement): void {
+    const select = root.querySelector(
+      "select[name='system.class.key']",
+    ) as HTMLSelectElement | null;
+    if (!select) return;
+    select.addEventListener("change", async (event) => {
+      const newClassKey = (event.target as HTMLSelectElement).value;
+      const currentSubclass = this.actor.system.class?.subclass ?? null;
+      if (currentSubclass && !ClassManager.isSubclassValid(newClassKey, currentSubclass)) {
+        await this.actor.update({
+          "system.class.key": newClassKey,
+          "system.class.subclass": null,
+        });
+        return;
+      }
+      await this.actor.update({ "system.class.key": newClassKey });
+    });
+  }
+
+  /** Hinzufügen / Entfernen / XP-Edit für Erfahrungsbereiche. */
+  private bindExperience(root: HTMLElement): void {
+    const addBtn = root.querySelector(
+      "[data-loa-action='add-experience']",
+    ) as HTMLElement | null;
+    if (addBtn) {
+      addBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const select = root.querySelector(
+          "[data-loa-experience-pick]",
+        ) as HTMLSelectElement | null;
+        const key = select?.value;
+        if (!key) return;
+        const area = ExperienceService.getArea(key);
+        const list = Array.isArray(this.actor.system.experience)
+          ? [...this.actor.system.experience]
+          : [];
+        if (list.some((e) => e.key === key)) return;
+        list.push({ key, label: area?.label, xp: 0 });
+        await this.actor.update({ "system.experience": list });
+      });
+    }
+
+    root.querySelectorAll<HTMLElement>("[data-loa-action='remove-experience']").forEach((el) => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const key = el.dataset.experienceKey;
+        if (!key) return;
+        const list = Array.isArray(this.actor.system.experience)
+          ? this.actor.system.experience.filter((e) => e.key !== key)
+          : [];
+        await this.actor.update({ "system.experience": list });
+      });
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-loa-experience-xp]").forEach((input) => {
+      input.addEventListener("change", async (event) => {
+        const target = event.target as HTMLInputElement;
+        const key = target.dataset.loaExperienceXp;
+        if (!key) return;
+        const xp = Math.max(0, Number(target.value) || 0);
+        const list = Array.isArray(this.actor.system.experience)
+          ? this.actor.system.experience.map((e) =>
+              e.key === key ? { ...e, xp } : e,
+            )
+          : [];
+        await this.actor.update({ "system.experience": list });
+      });
+    });
+  }
+
+  /** CRUD für Soul-Hunter Spezialmunition (Array). */
+  private bindSpecialAmmo(root: HTMLElement): void {
+    const addBtn = root.querySelector(
+      "[data-loa-action='add-special-ammo']",
+    ) as HTMLElement | null;
+    if (addBtn) {
+      addBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const list = Array.isArray(this.actor.system.resources?.specialAmmo)
+          ? [...this.actor.system.resources.specialAmmo]
+          : [];
+        list.push({ type: "", label: "Neue Munition", amount: 0 });
+        await this.actor.update({ "system.resources.specialAmmo": list });
+      });
+    }
+
+    root.querySelectorAll<HTMLElement>("[data-loa-action='remove-special-ammo']").forEach((el) => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const row = el.closest("[data-special-ammo-index]") as HTMLElement | null;
+        const idx = Number(row?.dataset.specialAmmoIndex ?? -1);
+        if (!Number.isFinite(idx) || idx < 0) return;
+        const current = Array.isArray(this.actor.system.resources?.specialAmmo)
+          ? [...this.actor.system.resources.specialAmmo]
+          : [];
+        current.splice(idx, 1);
+        await this.actor.update({ "system.resources.specialAmmo": current });
+      });
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-loa-special-ammo-field]").forEach((input) => {
+      input.addEventListener("change", async (event) => {
+        const target = event.target as HTMLInputElement;
+        const row = target.closest("[data-special-ammo-index]") as HTMLElement | null;
+        const idx = Number(row?.dataset.specialAmmoIndex ?? -1);
+        const field = target.dataset.loaSpecialAmmoField;
+        if (!Number.isFinite(idx) || idx < 0 || !field) return;
+        const list = Array.isArray(this.actor.system.resources?.specialAmmo)
+          ? [...this.actor.system.resources.specialAmmo]
+          : [];
+        const entry = { ...(list[idx] ?? { type: "", label: "", amount: 0 }) };
+        if (field === "amount") {
+          (entry as any)[field] = Math.max(0, Number(target.value) || 0);
+        } else {
+          (entry as any)[field] = target.value;
+        }
+        list[idx] = entry;
+        await this.actor.update({ "system.resources.specialAmmo": list });
+      });
+    });
   }
 
   /** Volltextsuche über Item-Name/Type/Description im Rucksack. */

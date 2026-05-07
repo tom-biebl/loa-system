@@ -15,8 +15,19 @@
         },
         "resources": {
           "hp": { "value": 80, "max": 80 },
-          "resonance": { "value": 0, "max": 30 }
+          "resonance": { "value": 0, "max": 30 },
+          "superiorityDice": { "dice": "1d6", "current": 3, "max": 3 },
+          "ammo": { "arrows": 0, "bolts": 0 },
+          "specialAmmo": []
         },
+        "classResources": {
+          "potions": { "slots": 6, "items": [] }
+        },
+        "class": {
+          "key": "none",
+          "subclass": null
+        },
+        "experience": [],
         "ac": {
           "bonus": 0,
           "value": 0

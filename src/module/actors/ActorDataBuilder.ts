@@ -1,10 +1,26 @@
 import type { AttributeKey } from "../constants/system.constants.js";
 import { ATTRIBUTE_KEYS, ATTRIBUTE_LABELS } from "../constants/system.constants.js";
-import type { LoAActorSystemData, LoAAttribute } from "../types/actor.types.js";
+import type {
+  LoAActorSystemData,
+  LoAAttribute,
+  LoAResource,
+  SuperiorityDiceResource,
+  AmmoResource,
+  SpecialAmmoEntry,
+  PotionInventory,
+} from "../types/actor.types.js";
 import { PointBuyService } from "../attributes/PointBuyService.js";
 import { ResourceManager } from "../resources/ResourceManager.js";
 import { ResonanceManager } from "../magic/ResonanceManager.js";
 import { InventoryService } from "../inventory/InventoryService.js";
+import { ClassManager } from "../classes/ClassManager.js";
+import {
+  CLASS_DEFINITIONS,
+  NULL_CLASS_LABEL,
+  type ClassResourceKey,
+  type SubclassDefinition,
+} from "../constants/class.constants.js";
+import { ExperienceService, type ExperienceComputed } from "../experience/ExperienceService.js";
 
 interface AttributeViewModel {
   key: AttributeKey;
@@ -50,6 +66,12 @@ interface WeaponVM extends InventoryItemVM {
   range: string;
 }
 
+interface ArmorVM extends InventoryItemVM {
+  acBonus: number;
+  armorType: string;
+  equipped: boolean;
+}
+
 interface AbilityVM extends InventoryItemVM {
   effectKind: "damage" | "heal" | "utility" | "reaction";
   effectKindLabel: string;
@@ -64,10 +86,50 @@ interface AbilityVM extends InventoryItemVM {
   reactionSummary: string;
 }
 
-interface ArmorVM extends InventoryItemVM {
-  acBonus: number;
-  armorType: string;
-  equipped: boolean;
+interface ClassOptionVM {
+  key: string;
+  label: string;
+}
+
+interface ClassViewModel {
+  key: string;
+  label: string;
+  subclassKey: string | null;
+  subclassLabel: string | null;
+  options: ClassOptionVM[];
+  subclasses: ClassOptionVM[];
+  hasSubclasses: boolean;
+}
+
+interface ClassResourcesViewModel {
+  any: boolean;
+  showResonance: boolean;
+  showSuperiorityDice: boolean;
+  superiorityDice: SuperiorityDiceResource;
+  showPotions: boolean;
+  potions: PotionInventory;
+  potionSlotIndices: number[];
+  showAmmo: boolean;
+  ammo: AmmoResource;
+  showSpecialAmmo: boolean;
+  specialAmmo: SpecialAmmoEntry[];
+}
+
+interface ExperienceGroupVM {
+  category: string;
+  entries: ExperienceComputed[];
+}
+
+interface ExperienceAddOptionGroup {
+  category: string;
+  areas: Array<{ key: string; label: string }>;
+}
+
+interface ExperienceViewModel {
+  groups: ExperienceGroupVM[];
+  totalCount: number;
+  available: ExperienceAddOptionGroup[];
+  hasAvailable: boolean;
 }
 
 export interface ActorSheetViewModel {
@@ -91,6 +153,9 @@ export interface ActorSheetViewModel {
   spellbook: SpellVM[];
   weapons: WeaponVM[];
   abilities: AbilityVM[];
+  class: ClassViewModel;
+  classResources: ClassResourcesViewModel;
+  experience: ExperienceViewModel;
 }
 
 const RESOURCE_LABELS: Record<string, string> = {
@@ -112,7 +177,7 @@ export class ActorDataBuilder {
     const system = actor.system;
 
     const attributes = ATTRIBUTE_KEYS.map((key): AttributeViewModel => {
-      const attr: LoAAttribute = system.attributes?.[key] ?? { value: 10, modifier: 0 };
+      const attr: LoAAttribute = system.attributes?.[key] ?? { value: 8, modifier: 0 };
       const modifier = attr.modifier;
       return {
         key,
@@ -124,18 +189,26 @@ export class ActorDataBuilder {
       };
     });
 
-    const resources: ResourceViewModel[] = Object.entries(system.resources ?? {}).map(
-      ([key, value]) => ({
-        key,
-        label: RESOURCE_LABELS[key] ?? key,
-        value: value.value,
-        max: value.max,
-        ratioPercent: Math.round(ResourceManager.ratio(value) * 100),
-      }),
+    const classView = ActorDataBuilder.buildClass(system);
+    const enabledResources = ClassManager.getEnabledResources(
+      classView.key,
+      classView.subclassKey,
     );
 
+    const resources: ResourceViewModel[] = [];
+    if (system.resources?.hp) {
+      resources.push(ActorDataBuilder.toResourceVM("hp", system.resources.hp as LoAResource));
+    }
+    if (enabledResources.has("resonance") && system.resources?.resonance) {
+      resources.push(
+        ActorDataBuilder.toResourceVM("resonance", system.resources.resonance as LoAResource),
+      );
+    }
+
     const budget = system.pointBuy?.total ?? 27;
-    const spent = PointBuyService.totalSpent(system.attributes ?? ({} as Record<AttributeKey, LoAAttribute>));
+    const spent = PointBuyService.totalSpent(
+      system.attributes ?? ({} as Record<AttributeKey, LoAAttribute>),
+    );
     const resonanceValue = system.resources?.resonance?.value ?? 0;
 
     const allItems = (actor.items?.contents ?? []) as any[];
@@ -144,6 +217,9 @@ export class ActorDataBuilder {
     const spellbook = ActorDataBuilder.buildSpellbook(allItems);
     const weapons = ActorDataBuilder.buildWeapons(allItems);
     const abilities = ActorDataBuilder.buildAbilities(allItems);
+
+    const classResources = ActorDataBuilder.buildClassResources(system, enabledResources);
+    const experience = ActorDataBuilder.buildExperience(system);
 
     return {
       attributes,
@@ -170,6 +246,127 @@ export class ActorDataBuilder {
       spellbook,
       weapons,
       abilities,
+      class: classView,
+      classResources,
+      experience,
+    };
+  }
+
+  // ----------------- Class -----------------
+
+  private static buildClass(system: LoAActorSystemData): ClassViewModel {
+    const key = system.class?.key ?? "none";
+    const subclassKey = system.class?.subclass ?? null;
+    const def = ClassManager.getDefinition(key);
+    const subDef = ClassManager.getSubclass(key, subclassKey);
+
+    const options: ClassOptionVM[] = [
+      { key: "none", label: NULL_CLASS_LABEL },
+      ...CLASS_DEFINITIONS.map((c) => ({ key: c.key, label: c.label })),
+    ];
+    const subclasses = (def?.subclasses ?? []).map((s: SubclassDefinition) => ({
+      key: s.key,
+      label: s.label,
+    }));
+
+    return {
+      key,
+      label: def?.label ?? NULL_CLASS_LABEL,
+      subclassKey,
+      subclassLabel: subDef?.label ?? null,
+      options,
+      subclasses,
+      hasSubclasses: subclasses.length > 0,
+    };
+  }
+
+  // ----------------- Class Resources -----------------
+
+  private static buildClassResources(
+    system: LoAActorSystemData,
+    enabled: Set<ClassResourceKey>,
+  ): ClassResourcesViewModel {
+    const showResonance = enabled.has("resonance");
+    const showSuperiorityDice = enabled.has("superiorityDice");
+    const showPotions = enabled.has("potions");
+    const showAmmo = enabled.has("ammo");
+    const showSpecialAmmo = enabled.has("specialAmmo");
+
+    const potions =
+      (system.classResources?.potions as PotionInventory) ?? { slots: 6, items: [] };
+    const potionSlotIndices = Array.from(
+      { length: Math.max(0, Number(potions.slots ?? 0)) },
+      (_, i) => i,
+    );
+
+    return {
+      any:
+        showResonance ||
+        showSuperiorityDice ||
+        showPotions ||
+        showAmmo ||
+        showSpecialAmmo,
+      showResonance,
+      showSuperiorityDice,
+      superiorityDice:
+        (system.resources?.superiorityDice as SuperiorityDiceResource) ?? {
+          dice: "1d6",
+          current: 0,
+          max: 0,
+        },
+      showPotions,
+      potions,
+      potionSlotIndices,
+      showAmmo,
+      ammo:
+        (system.resources?.ammo as AmmoResource) ?? { arrows: 0, bolts: 0 },
+      showSpecialAmmo,
+      specialAmmo: Array.isArray(system.resources?.specialAmmo)
+        ? (system.resources?.specialAmmo as SpecialAmmoEntry[])
+        : [],
+    };
+  }
+
+  // ----------------- Experience -----------------
+
+  private static buildExperience(system: LoAActorSystemData): ExperienceViewModel {
+    const computed = ExperienceService.computeAll(system.experience);
+    const grouped = new Map<string, ExperienceComputed[]>();
+    for (const entry of computed) {
+      const cat = entry.area?.category ?? "Sonstiges";
+      const list = grouped.get(cat) ?? [];
+      list.push(entry);
+      grouped.set(cat, list);
+    }
+    const groups: ExperienceGroupVM[] = Array.from(grouped.entries()).map(
+      ([category, entries]) => ({ category, entries }),
+    );
+
+    const ownedKeys = computed.map((e) => e.key);
+    const available = ExperienceService.getAvailableByCategory(ownedKeys).map(
+      (group) => ({
+        category: group.category,
+        areas: group.areas.map((a) => ({ key: a.key, label: a.label })),
+      }),
+    );
+
+    return {
+      groups,
+      totalCount: computed.length,
+      available,
+      hasAvailable: available.length > 0,
+    };
+  }
+
+  // ----------------- Inventory / Items -----------------
+
+  private static toResourceVM(key: string, value: LoAResource): ResourceViewModel {
+    return {
+      key,
+      label: RESOURCE_LABELS[key] ?? key,
+      value: value.value,
+      max: value.max,
+      ratioPercent: Math.round(ResourceManager.ratio(value) * 100),
     };
   }
 
@@ -178,8 +375,6 @@ export class ActorDataBuilder {
     const backpack = items.filter((it) => InventoryService.countsTowardsBackpack(it));
     const used = backpack.reduce((sum, it) => sum + InventoryService.slotCost(it), 0);
 
-    // Items nach Slot-Belegung in Slots auflösen — ein Item, das 2 Slots belegt,
-    // bekommt einen Hauptslot und einen Folge-Slot.
     const slots: Array<{ index: number; item: InventoryItemVM | null }> = [];
     let cursor = 0;
     for (const item of backpack) {

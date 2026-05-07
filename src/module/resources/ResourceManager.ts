@@ -15,7 +15,7 @@ export interface ResourceCapableActor {
 
 export class ResourceManager {
   static get(actor: ResourceCapableActor, key: string): LoAResource | undefined {
-    return actor.system.resources?.[key];
+    return actor.system.resources?.[key] as LoAResource | undefined;
   }
 
   static async setValue(

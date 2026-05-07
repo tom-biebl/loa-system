@@ -103,6 +103,35 @@
   letter-spacing: 0.1em;
 }
 
+/* Klassen-Block in der Sidebar */
+
+.loa-class-block {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 14px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(201, 164, 88, 0.32);
+  border-radius: 6px;
+}
+
+.loa-class-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--loa-gold-light);
+  margin: 2px 0 0;
+}
+
+.loa-class-block select {
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--loa-parchment-soft);
+  border: 1px solid rgba(201, 164, 88, 0.35);
+  border-radius: 4px;
+  padding: 5px 6px;
+  font-size: 13px;
+}
+
 /* Stat-Strip (HP, Resonanz, AC) */
 
 .loa-stat-strip {
@@ -794,6 +823,168 @@
 .loa-warn {
   color: var(--loa-blood);
   font-weight: 700;
+}
+
+/* -------------------- Klassen-Ressourcen -------------------- */
+
+.loa-class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.loa-class-grid label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--loa-leather-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.loa-superiority-die {
+  margin-left: 6px;
+  width: 70px;
+}
+
+.loa-special-ammo {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--loa-leather);
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.45);
+}
+
+.loa-special-ammo h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--loa-leather-dark);
+}
+
+.loa-special-ammo-list {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.loa-special-ammo-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 70px auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.loa-special-ammo-row .loa-slot-trash {
+  position: static;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.loa-potion-belt {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--loa-leather);
+  border-radius: 6px;
+  background: rgba(168, 130, 80, 0.12);
+}
+
+.loa-potion-belt h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--loa-leather-dark);
+}
+
+.loa-potion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 6px;
+}
+
+.loa-potion-slot {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1)),
+    rgba(40, 25, 15, 0.5);
+  border: 1px solid var(--loa-leather-dark);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(214, 191, 145, 0.25);
+  font-size: 16px;
+}
+
+/* -------------------- Erfahrung ----------------------------- */
+
+.loa-experience-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.loa-experience-add select {
+  flex: 1;
+}
+
+.loa-experience-group {
+  margin: 14px 0 6px;
+  font-size: 13px;
+  color: var(--loa-leather-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--loa-leather-light);
+  padding-bottom: 4px;
+}
+
+.loa-experience-list {
+  display: grid;
+  gap: 6px;
+}
+
+.loa-experience-row {
+  display: grid;
+  grid-template-columns: 1.5fr 80px 1fr 60px auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.5);
+  border: 1px solid var(--loa-leather);
+}
+
+.loa-experience-name {
+  font-weight: 600;
+  color: var(--loa-leather-dark);
+}
+
+.loa-experience-xp {
+  text-align: right;
+}
+
+.loa-experience-rank {
+  font-size: 12px;
+  color: var(--loa-ink-soft);
+}
+
+.loa-experience-bonus {
+  font-weight: 700;
+  color: var(--loa-gold);
+  text-align: center;
+  background: rgba(201, 164, 88, 0.18);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--loa-gold);
+}
+
+.loa-experience-row .loa-slot-trash {
+  position: static;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
 }
 
 /* -------------------- Item-Sheets --------------------------- */

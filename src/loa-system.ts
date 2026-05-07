@@ -17,6 +17,8 @@ import { AttackService } from "./module/combat/AttackService.js";
 import { TargetService } from "./module/combat/TargetService.js";
 import { ReactionService } from "./module/combat/ReactionService.js";
 import { AbilityUseService } from "./module/abilities/AbilityUseService.js";
+import { ClassManager } from "./module/classes/ClassManager.js";
+import { ExperienceService } from "./module/experience/ExperienceService.js";
 import { EffectManager } from "./module/effects/EffectManager.js";
 import { EffectFactory } from "./module/effects/EffectFactory.js";
 import { InventoryService } from "./module/inventory/InventoryService.js";
@@ -45,6 +47,8 @@ registerHooks();
   TargetService,
   ReactionService,
   AbilityUseService,
+  ClassManager,
+  ExperienceService,
   EffectManager,
   EffectFactory,
   InventoryService,
