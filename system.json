@@ -19,6 +19,7 @@
   "esmodules": [
     "dist/loa-system.js"
   ],
+  "socket": true,
   "styles": [
     "styles/loa-system.css"
   ],

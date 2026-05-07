@@ -55,6 +55,9 @@ function onControlToken(_token: unknown, controlled: boolean): void {
 }
 
 async function resetActiveCombatant(combat: Combat): Promise<void> {
+  // Spec: nur ein Client soll resetten, sonst doppelte Updates oder Permission-Errors
+  // bei Spielern, die nicht-eigene Actors nicht updaten dürfen.
+  if (typeof game === "undefined" || !game.user?.isGM) return;
   const id = combat.current?.combatantId;
   if (!id) return;
   const combatant = combat.combatants.get(id);

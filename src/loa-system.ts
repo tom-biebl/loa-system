@@ -26,6 +26,7 @@ import { EffectManager } from "./module/effects/EffectManager.js";
 import { EffectFactory } from "./module/effects/EffectFactory.js";
 import { InventoryService } from "./module/inventory/InventoryService.js";
 import { ChatCardRenderer } from "./module/chat/ChatCardRenderer.js";
+import { GMBridgeService } from "./module/network/GMBridgeService.js";
 
 /**
  * Einstiegspunkt für das gebundelte System. Macht Services für Makros / Konsole
@@ -59,5 +60,6 @@ registerHooks();
   EffectFactory,
   InventoryService,
   ChatCardRenderer,
+  GMBridgeService,
   Logger,
 };

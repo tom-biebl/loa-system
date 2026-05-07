@@ -6,6 +6,7 @@ import { ActionEconomyService } from "./ActionEconomy.js";
 import { ChatCardRenderer } from "../chat/ChatCardRenderer.js";
 import { RollManager } from "../rolls/RollManager.js";
 import { RollFormulaBuilder } from "../rolls/RollFormulaBuilder.js";
+import { GMBridgeService } from "../network/GMBridgeService.js";
 import { Logger } from "../utils/Logger.js";
 
 type ReactionKind = "reduce_damage" | "counter" | "dodge" | "custom";
@@ -120,10 +121,7 @@ export class ReactionService {
       type: flags.damageType as any,
     });
     const updated: PendingDamageFlags = { ...flags, resolved: true };
-    await message.update({
-      content: ChatCardRenderer.buildPendingDamage(updated),
-      flags: { [FLAG_SCOPE]: updated },
-    });
+    await ReactionService.persistMessageUpdate(message, updated);
   }
 
   static async openReactionDialog(message: any): Promise<void> {
@@ -260,10 +258,7 @@ export class ReactionService {
       damage: newDamage,
       reactionUsed: summary,
     };
-    await message.update({
-      content: ChatCardRenderer.buildPendingDamage(updated),
-      flags: { [FLAG_SCOPE]: updated },
-    });
+    await ReactionService.persistMessageUpdate(message, updated);
     Logger.info("Reaction used", {
       actor: target.name,
       item: reaction.name,
@@ -298,6 +293,29 @@ export class ReactionService {
 
   private static withRollSummary(base: string, rollSummary: string): string {
     return rollSummary ? `${base} (${rollSummary})` : base;
+  }
+
+  /**
+   * Persistiert das Pending-Damage-Update an die ChatMessage.
+   * Wenn der aktuelle User die Message nicht besitzt (z.B. Spieler reagiert
+   * auf einen GM-Angriff), geht das Update via GMBridgeService an den GM-Client.
+   */
+  private static async persistMessageUpdate(
+    message: any,
+    flags: PendingDamageFlags,
+  ): Promise<void> {
+    const update = {
+      content: ChatCardRenderer.buildPendingDamage(flags),
+      flags: { [FLAG_SCOPE]: flags },
+    };
+    if (GMBridgeService.canModifyMessage(message)) {
+      await message.update(update);
+      return;
+    }
+    await GMBridgeService.run("updateChatMessage", {
+      messageId: message.id,
+      update,
+    });
   }
 
   /**

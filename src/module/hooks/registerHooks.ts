@@ -9,6 +9,8 @@ import { InitiativeService } from "../combat/InitiativeService.js";
 import { WildMagicTableInstaller } from "../magic/WildMagicTableInstaller.js";
 import { registerCombatHooks } from "./combatHooks.js";
 import { registerChatHooks } from "./chatHooks.js";
+import { GMBridgeService } from "../network/GMBridgeService.js";
+import { registerGMBridgeHandlers } from "../network/registerGMBridgeHandlers.js";
 
 /**
  * Zentrale Hook-Registrierung. Andere Module sollen NICHT direkt
@@ -48,5 +50,7 @@ function onInit(): void {
 
 async function onReady(): Promise<void> {
   Logger.info(`${SYSTEM_LABEL} | ready`);
+  registerGMBridgeHandlers();
+  GMBridgeService.register();
   await WildMagicTableInstaller.ensure();
 }

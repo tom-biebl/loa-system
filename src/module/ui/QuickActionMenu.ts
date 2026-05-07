@@ -14,6 +14,7 @@ import { Logger } from "../utils/Logger.js";
  */
 export class QuickActionMenu extends Application {
   private static instance: QuickActionMenu | null = null;
+  private static hooksRegistered = false;
   private boundActor: any | null = null;
 
   static override get defaultOptions(): Record<string, unknown> {
@@ -35,7 +36,32 @@ export class QuickActionMenu extends Application {
     if (!QuickActionMenu.instance) {
       QuickActionMenu.instance = new QuickActionMenu();
     }
+    QuickActionMenu.ensureLiveHooks();
     return QuickActionMenu.instance;
+  }
+
+  /**
+   * Registriert globale Hooks für Live-Refresh:
+   * - Item Create/Update/Delete auf dem gebundenen Actor
+   * - Actor-Update (z.B. Resource-Changes)
+   * Idempotent: läuft genau einmal.
+   */
+  private static ensureLiveHooks(): void {
+    if (QuickActionMenu.hooksRegistered) return;
+    QuickActionMenu.hooksRegistered = true;
+
+    const refresh = (parentActorId: string | null | undefined): void => {
+      const inst = QuickActionMenu.instance;
+      if (!inst?.rendered) return;
+      if (!parentActorId) return;
+      if (inst.boundActor?.id !== parentActorId) return;
+      inst.render();
+    };
+
+    Hooks.on("createItem", (item: any) => refresh(item?.parent?.id));
+    Hooks.on("updateItem", (item: any) => refresh(item?.parent?.id));
+    Hooks.on("deleteItem", (item: any) => refresh(item?.parent?.id));
+    Hooks.on("updateActor", (actor: any) => refresh(actor?.id));
   }
 
   static openFor(actor: any | null | undefined): void {
