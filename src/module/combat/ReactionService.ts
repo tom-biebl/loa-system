@@ -128,7 +128,18 @@ export class ReactionService {
 
     const reactions = ReactionService.collectReactions(target, flags);
     if (reactions.length === 0) {
-      ui.notifications?.info("Dieses Ziel hat keine Reaktionen verfügbar.");
+      Logger.info("No reaction items configured", {
+        actor: target.name,
+        items: (target.items?.contents ?? []).map((i: any) => ({
+          name: i.name,
+          type: i.type,
+          effectKind: i.system?.effectKind,
+          actionCost: i.system?.actionCost,
+        })),
+      });
+      ui.notifications?.info(
+        `Auf ${target.name} ist kein Item mit Effekt-Art „Reaktion" angelegt. Erstelle eine Ability oder einen Spell mit effectKind=Reaktion.`,
+      );
       return;
     }
 

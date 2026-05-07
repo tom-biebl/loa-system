@@ -20,8 +20,38 @@ export class LoAActor extends Actor {
     if (this.system?.attributes) {
       AttributeService.deriveModifiers(this.system.attributes);
     }
+    LoAActor.ensureCombatActions(this);
     LoAActor.deriveHitPoints(this);
     LoAActor.deriveArmorClass(this);
+  }
+
+  /**
+   * Stellt sicher, dass `system.combat.actions.{action,bonusAction,reaction}` existiert.
+   * Migriert alte Actors mit `system.actionEconomy.{actions,bonusActions,reactions}` automatisch.
+   * Reine Runtime-Befüllung — schreibt nicht in den Datenbankzustand.
+   */
+  static ensureCombatActions(actor: LoAActor): void {
+    const sys = actor.system as any;
+    const combat = (sys.combat = sys.combat ?? {});
+    const actions = (combat.actions = combat.actions ?? {});
+    const legacy = sys.actionEconomy ?? null;
+    const legacyKey = {
+      action: "actions",
+      bonusAction: "bonusActions",
+      reaction: "reactions",
+    } as const;
+    for (const type of ["action", "bonusAction", "reaction"] as const) {
+      const existing = actions[type];
+      if (existing && typeof existing.current === "number" && typeof existing.max === "number") {
+        continue;
+      }
+      const legacyEntry = legacy?.[legacyKey[type]];
+      if (legacyEntry && typeof legacyEntry.value === "number" && typeof legacyEntry.max === "number") {
+        actions[type] = { current: legacyEntry.value, max: legacyEntry.max };
+      } else {
+        actions[type] = { current: 1, max: 1 };
+      }
+    }
   }
 
   /** HP-Max ergibt sich aus Constitution: 1 Con-Punkt = 10 HP. Aktueller Wert wird geclampt. */

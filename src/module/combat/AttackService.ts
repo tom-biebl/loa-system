@@ -135,7 +135,8 @@ export class AttackService {
           damage: damageTotal,
           damageType,
           source: weaponName,
-          dc: null,
+          // DC = Attack-Roll-Total: Ausweichen / Counter würfeln dagegen
+          dc: attackTotal,
         });
       } catch (error) {
         Logger.warn("AttackService: pending damage failed", error);
