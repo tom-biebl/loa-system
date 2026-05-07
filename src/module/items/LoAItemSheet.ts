@@ -26,6 +26,8 @@ export class LoAItemSheet extends ItemSheet {
         return TEMPLATE_PATHS.itemArmor;
       case "ability":
         return TEMPLATE_PATHS.itemAbility;
+      case "consumable":
+        return TEMPLATE_PATHS.itemConsumable;
       default:
         return TEMPLATE_PATHS.itemGeneric;
     }

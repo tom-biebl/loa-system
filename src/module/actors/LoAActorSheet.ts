@@ -122,6 +122,24 @@ export class LoAActorSheet extends ActorSheet {
       return null;
     }
 
+    // Consumables stapeln, wenn ein gleichnamiger Stack noch Platz hat.
+    if (zone === "backpack" && item.type === "consumable") {
+      const stackResult = await InventoryService.stackConsumable(this.actor, item);
+      if (stackResult.handled && stackResult.remainder === 0) {
+        return null;
+      }
+      if (stackResult.remainder > 0) {
+        if (!InventoryService.canAccept(this.actor, item)) {
+          ui.notifications?.warn("Rucksack ist voll für den Reststapel.");
+          return null;
+        }
+        const data = item.toObject();
+        data.system = data.system || {};
+        data.system.quantity = stackResult.remainder;
+        return this.actor.createEmbeddedDocuments("Item", [data]);
+      }
+    }
+
     const itemData = item.toObject();
     if (zone === "spellbook" && item.type === "spell") {
       itemData.system = itemData.system || {};
@@ -215,6 +233,11 @@ export class LoAActorSheet extends ActorSheet {
             event.preventDefault();
             if (!item) return;
             await item.useAbility?.();
+            return;
+          case "use-consumable":
+            event.preventDefault();
+            if (!item) return;
+            await InventoryService.consumeOne(actor, item);
             return;
           case "unequip-armor":
             event.preventDefault();

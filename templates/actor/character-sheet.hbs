@@ -135,14 +135,20 @@
                     <div class="loa-slot filled loa-draggable"
                          data-item-id="{{slot.item.id}}"
                          data-search-haystack="{{slot.item.name}} {{slot.item.type}} {{slot.item.description}}"
-                         title="{{slot.item.name}}">
+                         title="{{slot.item.name}}{{#if slot.item.hasStack}} (×{{slot.item.quantity}}){{/if}}">
                       <img src="{{slot.item.img}}" data-action="open-item" />
                       <span class="loa-slot-name">{{slot.item.name}}</span>
+                      {{#if slot.item.hasStack}}
+                        <span class="loa-slot-quantity">×{{slot.item.quantity}}</span>
+                      {{/if}}
                       {{#if (eq slot.item.type 'weapon')}}
                         <button type="button" class="loa-slot-action loa-slot-attack" data-action="attack-weapon" data-item-id="{{slot.item.id}}" title="Angreifen">⚔</button>
                       {{/if}}
                       {{#if (eq slot.item.type 'armor')}}
                         <button type="button" class="loa-slot-action" data-action="equip-armor" data-item-id="{{slot.item.id}}" title="Anlegen">🛡</button>
+                      {{/if}}
+                      {{#if (eq slot.item.type 'consumable')}}
+                        <button type="button" class="loa-slot-action" data-action="use-consumable" data-item-id="{{slot.item.id}}" title="Verwenden">🧪</button>
                       {{/if}}
                       <button type="button" class="loa-slot-trash" data-action="delete-item" data-item-id="{{slot.item.id}}" title="Löschen">✕</button>
                     </div>
@@ -200,7 +206,7 @@
                     <strong>{{ability.name}}</strong>
                     <span class="loa-muted">
                       {{ability.effectKindLabel}} · {{ability.actionCostLabel}}
-                      {{#if ability.isReaction}} · -{{ability.damageReduction}} DR{{/if}}
+                      {{#if ability.reactionSummary}} · {{ability.reactionSummary}}{{/if}}
                     </span>
                   </div>
                   {{#unless ability.isReaction}}

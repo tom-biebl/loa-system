@@ -30,6 +30,8 @@ interface InventoryItemVM {
   type: string;
   slots: number;
   description: string;
+  quantity: number;
+  hasStack: boolean;
 }
 
 interface SpellVM extends InventoryItemVM {
@@ -49,7 +51,7 @@ interface WeaponVM extends InventoryItemVM {
 }
 
 interface AbilityVM extends InventoryItemVM {
-  effectKind: "damage" | "heal" | "utility";
+  effectKind: "damage" | "heal" | "utility" | "reaction";
   effectKindLabel: string;
   actionCost: "action" | "bonus" | "reaction" | "free";
   actionCostLabel: string;
@@ -57,7 +59,9 @@ interface AbilityVM extends InventoryItemVM {
   damage: string;
   damageType: string;
   healFormula: string;
-  damageReduction: number;
+  reactionMode: string;
+  reactionFormula: string;
+  reactionSummary: string;
 }
 
 interface ArmorVM extends InventoryItemVM {
@@ -231,6 +235,7 @@ export class ActorDataBuilder {
       damage: "Schaden",
       heal: "Heilung",
       utility: "Utility",
+      reaction: "Reaktion",
     };
     const costLabels: Record<string, string> = {
       action: "Aktion",
@@ -238,22 +243,46 @@ export class ActorDataBuilder {
       reaction: "Reaktion",
       free: "Kostenlos",
     };
+    const modeLabels: Record<string, string> = {
+      flat: "Block",
+      rolled: "Wurf vs DC",
+      counter: "Gegenzauber",
+    };
     return items
       .filter((it) => it.type === "ability")
       .map((ability) => {
-        const effectKind = (ability.system?.effectKind ?? "utility") as AbilityVM["effectKind"];
-        const actionCost = (ability.system?.actionCost ?? "action") as AbilityVM["actionCost"];
+        const sys = ability.system ?? {};
+        const effectKind = (sys.effectKind ?? "utility") as AbilityVM["effectKind"];
+        const actionCost = (sys.actionCost ?? "action") as AbilityVM["actionCost"];
+        const reactionMode = String(sys.reactionMode ?? "flat");
+        const reactionFormula = String(sys.reactionFormula ?? "0");
+        const reactionAttribute = String(sys.reactionAttribute ?? "int");
+        const isReaction = effectKind === "reaction" || actionCost === "reaction";
+
+        let reactionSummary = "";
+        if (effectKind === "reaction") {
+          if (reactionMode === "flat") {
+            reactionSummary = `Block ${reactionFormula}`;
+          } else if (reactionMode === "counter") {
+            reactionSummary = `Gegenzauber (${reactionAttribute})`;
+          } else {
+            reactionSummary = `Wurf ${reactionAttribute} → ${reactionFormula}`;
+          }
+        }
+
         return {
           ...ActorDataBuilder.toItemVM(ability),
           effectKind,
           effectKindLabel: kindLabels[effectKind] ?? effectKind,
           actionCost,
           actionCostLabel: costLabels[actionCost] ?? actionCost,
-          isReaction: actionCost === "reaction",
-          damage: String(ability.system?.damage ?? ""),
-          damageType: String(ability.system?.damageType ?? "physical"),
-          healFormula: String(ability.system?.healFormula ?? ""),
-          damageReduction: Number(ability.system?.damageReduction ?? 0),
+          isReaction,
+          damage: String(sys.damage ?? ""),
+          damageType: String(sys.damageType ?? "physical"),
+          healFormula: String(sys.healFormula ?? ""),
+          reactionMode,
+          reactionFormula,
+          reactionSummary: reactionSummary || (isReaction ? modeLabels[reactionMode] ?? "" : ""),
         };
       });
   }
@@ -272,6 +301,7 @@ export class ActorDataBuilder {
   }
 
   private static toItemVM(item: any): InventoryItemVM {
+    const quantity = Math.max(1, Number(item.system?.quantity ?? 1));
     return {
       id: String(item.id ?? ""),
       name: String(item.name ?? "Item"),
@@ -279,6 +309,8 @@ export class ActorDataBuilder {
       type: String(item.type ?? ""),
       slots: InventoryService.slotCost(item),
       description: String(item.system?.description ?? ""),
+      quantity,
+      hasStack: quantity > 1,
     };
   }
 }

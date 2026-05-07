@@ -1,0 +1,28 @@
+<form class="{{cssClass}} loa-item-sheet loa-consumable-sheet" autocomplete="off">
+  <header class="loa-item-header">
+    <img class="loa-item-img" src="{{item.img}}" data-edit="img" />
+    <div>
+      <input class="loa-item-name" name="name" type="text" value="{{item.name}}" />
+      <span class="loa-item-type">Consumable · stapelbar</span>
+    </div>
+  </header>
+
+  <section class="loa-item-body">
+    <div class="loa-field-grid">
+      <label>Anzahl im Stack
+        <input name="system.quantity" type="number" min="1" max="10" value="{{system.quantity}}" />
+      </label>
+      <label>Slot-Belegung
+        <input name="system.slots" type="number" min="0" value="{{system.slots}}" />
+      </label>
+    </div>
+
+    <p class="loa-muted loa-mini">Stack-Limit: 10 pro Slot. Beim Verwenden wird die Anzahl um 1 reduziert; bei 0 wird das Item entfernt.</p>
+
+    <label>Effekt</label>
+    <textarea name="system.effect">{{system.effect}}</textarea>
+
+    <label>Beschreibung</label>
+    <textarea name="system.description">{{system.description}}</textarea>
+  </section>
+</form>

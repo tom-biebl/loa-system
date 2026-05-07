@@ -10,6 +10,7 @@ export const TEMPLATE_PATHS = {
   itemSpell: `${ROOT}/templates/item/spell-sheet.hbs`,
   itemArmor: `${ROOT}/templates/item/armor-sheet.hbs`,
   itemAbility: `${ROOT}/templates/item/ability-sheet.hbs`,
+  itemConsumable: `${ROOT}/templates/item/consumable-sheet.hbs`,
   chatAttack: `${ROOT}/templates/chat/attack-result.hbs`,
   chatRoll: `${ROOT}/templates/chat/roll-result.hbs`,
 } as const;

@@ -43,10 +43,19 @@ interface SpellLike {
  *   heal    → Heal-Roll, Heilung auf Target oder Self
  *   utility → keine zusätzlichen Würfe
  */
+interface CastOptions {
+  dc?: number | null;
+}
+
 export class SpellCastService {
-  static async cast(actor: SpellActorLike, spell: SpellLike): Promise<void> {
+  static async cast(
+    actor: SpellActorLike,
+    spell: SpellLike,
+    options: CastOptions = {},
+  ): Promise<void> {
     const speaker = ChatMessage.getSpeaker({ actor });
     const kind = (spell.system.effectKind ?? "damage") as EffectKind;
+    const dc = options.dc ?? null;
 
     const generates = !spell.system.isCantrip && Boolean(spell.system.generatesResonance);
     const cost = generates ? Number(spell.system.resonanceCost ?? 0) : 0;
@@ -61,7 +70,7 @@ export class SpellCastService {
 
     const attacks =
       kind === "damage"
-        ? await SpellCastService.rollAttacks(actor, spell, resonanceCheck, speaker)
+        ? await SpellCastService.rollAttacks(actor, spell, resonanceCheck, speaker, dc)
         : [];
 
     const heal =
@@ -90,6 +99,7 @@ export class SpellCastService {
     spell: SpellLike,
     resonance: ResonanceCheckResult,
     speaker: unknown,
+    dc: number | null,
   ): Promise<AttackResult[]> {
     if (!spell.system.damage) return [];
 
@@ -148,6 +158,7 @@ export class SpellCastService {
             damage: damageTotal,
             damageType,
             source: spellName,
+            dc,
           });
         } catch (error) {
           Logger.warn("SpellCastService: pending damage failed", error);

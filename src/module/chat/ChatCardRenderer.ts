@@ -64,6 +64,7 @@ interface PendingDamageFlagsLike {
   damageType: string;
   reactionUsed: string | null;
   resolved: boolean;
+  dc: number | null;
 }
 
 /**
@@ -154,6 +155,8 @@ export class ChatCardRenderer {
         return "Heilung";
       case "utility":
         return "Utility";
+      case "reaction":
+        return "Reaktion";
     }
   }
 
@@ -174,6 +177,10 @@ export class ChatCardRenderer {
     const reaction = flags.reactionUsed
       ? `<p class="loa-pending-reaction"><em>Reaktion: ${flags.reactionUsed}</em></p>`
       : "";
+    const dcLine =
+      flags.dc !== null
+        ? `<p class="loa-pending-dc">Reaktions-DC: <strong>${flags.dc}</strong></p>`
+        : "";
     const buttons = flags.resolved
       ? `<p class="loa-pending-resolved">Schaden angewendet.</p>`
       : `<div class="loa-pending-actions">
@@ -184,6 +191,7 @@ export class ChatCardRenderer {
       <header class="loa-chat-header"><strong>${flags.attackerName}</strong> trifft <strong>${flags.targetName}</strong></header>
       <p>Quelle: ${flags.source}</p>
       <p>Eingehender Schaden: <strong>${flags.damage}</strong> ${flags.damageType}</p>
+      ${dcLine}
       ${reaction}
       ${buttons}
     </div>`;

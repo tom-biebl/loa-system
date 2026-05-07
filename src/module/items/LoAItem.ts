@@ -1,6 +1,7 @@
 import type { ItemType } from "../constants/system.constants.js";
 import type {
   ActionCost,
+  EffectKind,
   LoAItemSystemData,
   SpellSystemData,
   WeaponSystemData,
@@ -9,6 +10,7 @@ import { Logger } from "../utils/Logger.js";
 import { SpellCastService } from "../magic/SpellCastService.js";
 import { AttackService } from "../combat/AttackService.js";
 import { AbilityUseService } from "../abilities/AbilityUseService.js";
+import { ReactionService } from "../combat/ReactionService.js";
 import { ACTION_COST_LABELS, ActionEconomyService } from "../combat/ActionEconomy.js";
 import type { LoAActor } from "../actors/LoAActor.js";
 
@@ -33,10 +35,14 @@ export class LoAItem extends Item {
     return this.type === "ability";
   }
 
-  /** Action-Cost des Items. Default `action`, falls nicht gesetzt. */
   getActionCost(): ActionCost {
     const value = (this.system as { actionCost?: ActionCost }).actionCost;
     return value ?? "action";
+  }
+
+  getEffectKind(): EffectKind {
+    const value = (this.system as { effectKind?: EffectKind }).effectKind;
+    return value ?? "damage";
   }
 
   /** Wirkt einen Zauber (siehe SpellCastService). */
@@ -50,11 +56,26 @@ export class LoAItem extends Item {
       ui.notifications?.warn("Zauber benötigt einen Charakter.");
       return;
     }
+    const kind = this.getEffectKind();
+    if (kind === "reaction") {
+      ui.notifications?.info(
+        "Reaktionen werden über die Pending-Damage-Karte ausgelöst, nicht direkt gewirkt.",
+      );
+      return;
+    }
+
+    // DC-Dialog VOR Action-Cost-Verbrauch — sonst kostet's beim Abbrechen.
+    let dc: number | null = null;
+    if (kind === "damage") {
+      const defaultDC = Number(this.system.reactionDC ?? 10);
+      dc = await ReactionService.promptDC(this.name ?? "Zauber", defaultDC);
+      if (dc === null) return;
+    }
+
     if (!(await this.consumeActionCost(actor))) return;
-    await SpellCastService.cast(actor, this);
+    await SpellCastService.cast(actor, this, { dc });
   }
 
-  /** Greift mit der Waffe an (Targets via Foundry-Targeting). */
   async attack(): Promise<void> {
     if (!this.isWeapon()) {
       Logger.warn("attack called on non-weapon item", { itemId: this.id });
@@ -80,17 +101,25 @@ export class LoAItem extends Item {
       ui.notifications?.warn("Fähigkeit benötigt einen Charakter.");
       return;
     }
-    if (this.getActionCost() === "reaction") {
+    const kind = this.getEffectKind();
+    if (kind === "reaction") {
       ui.notifications?.info(
-        "Reaktionen werden nur über die Pending-Damage-Karte ausgelöst.",
+        "Reaktionen werden über die Pending-Damage-Karte ausgelöst, nicht direkt verwendet.",
       );
       return;
     }
+
+    let dc: number | null = null;
+    if (kind === "damage") {
+      const defaultDC = Number((this.system as { reactionDC?: number }).reactionDC ?? 10);
+      dc = await ReactionService.promptDC(this.name ?? "Fähigkeit", defaultDC);
+      if (dc === null) return;
+    }
+
     if (!(await this.consumeActionCost(actor))) return;
-    await AbilityUseService.use(actor, this);
+    await AbilityUseService.use(actor, this, { dc });
   }
 
-  /** Versucht, die nötige Action-Slot zu verbrauchen. False = nicht genug verfügbar. */
   private async consumeActionCost(actor: LoAActor): Promise<boolean> {
     const cost = this.getActionCost();
     const ok = await ActionEconomyService.spendForCost(actor, cost);

@@ -135,6 +135,7 @@ export class AttackService {
           damage: damageTotal,
           damageType,
           source: weaponName,
+          dc: null,
         });
       } catch (error) {
         Logger.warn("AttackService: pending damage failed", error);

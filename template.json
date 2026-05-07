@@ -6,15 +6,15 @@
         "level": 1,
         "biography": "",
         "attributes": {
-          "str": { "value": 10, "modifier": 0 },
-          "dex": { "value": 10, "modifier": 0 },
-          "con": { "value": 10, "modifier": 0 },
-          "int": { "value": 10, "modifier": 0 },
-          "wis": { "value": 10, "modifier": 0 },
-          "cha": { "value": 10, "modifier": 0 }
+          "str": { "value": 8, "modifier": 0 },
+          "dex": { "value": 8, "modifier": 0 },
+          "con": { "value": 8, "modifier": 0 },
+          "int": { "value": 8, "modifier": 0 },
+          "wis": { "value": 8, "modifier": 0 },
+          "cha": { "value": 8, "modifier": 0 }
         },
         "resources": {
-          "hp": { "value": 100, "max": 100 },
+          "hp": { "value": 80, "max": 80 },
           "resonance": { "value": 0, "max": 30 }
         },
         "ac": {
@@ -86,6 +86,10 @@
       "attackBonus": 0,
       "actionCost": "action",
       "isCantrip": false,
+      "reactionDC": 10,
+      "reactionMode": "flat",
+      "reactionFormula": "0",
+      "reactionAttribute": "int",
       "slots": 0
     },
     "ability": {
@@ -95,14 +99,18 @@
       "damage": "",
       "damageType": "physical",
       "healFormula": "",
-      "damageReduction": 0,
       "cooldown": "",
+      "reactionDC": 10,
+      "reactionMode": "flat",
+      "reactionFormula": "0",
+      "reactionAttribute": "str",
       "slots": 0
     },
     "consumable": {
       "templates": ["describable"],
       "uses": { "value": 1, "max": 1 },
       "effect": "",
+      "quantity": 1,
       "slots": 1
     },
     "equipment": {

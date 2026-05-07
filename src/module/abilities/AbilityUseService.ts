@@ -28,15 +28,24 @@ interface AbilityLike {
  * Reaction-Abilities haben hier KEINEN eigenen „Verwenden"-Pfad — die werden
  * ausschließlich über den Pending-Damage-Dialog (ReactionService) ausgelöst.
  */
+interface UseOptions {
+  dc?: number | null;
+}
+
 export class AbilityUseService {
-  static async use(actor: AbilityActor, ability: AbilityLike): Promise<void> {
+  static async use(
+    actor: AbilityActor,
+    ability: AbilityLike,
+    options: UseOptions = {},
+  ): Promise<void> {
     const speaker = ChatMessage.getSpeaker({ actor });
     const kind = (ability.system.effectKind ?? "utility") as EffectKind;
     const name = ability.name ?? "Fähigkeit";
+    const dc = options.dc ?? null;
 
     switch (kind) {
       case "damage":
-        await AbilityUseService.execDamage(actor, ability, speaker, name);
+        await AbilityUseService.execDamage(actor, ability, speaker, name, dc);
         return;
       case "heal":
         await AbilityUseService.execHeal(actor, ability, speaker, name);
@@ -58,6 +67,7 @@ export class AbilityUseService {
     ability: AbilityLike,
     speaker: unknown,
     name: string,
+    dc: number | null,
   ): Promise<void> {
     const formula = ability.system.damage;
     if (!formula) {
@@ -85,6 +95,7 @@ export class AbilityUseService {
           damage,
           damageType,
           source: name,
+          dc,
         });
       } catch (error) {
         Logger.warn("AbilityUseService: pending damage failed", error);

@@ -531,6 +531,22 @@
   pointer-events: none;
 }
 
+.loa-slot-quantity {
+  position: absolute;
+  bottom: 18px;
+  right: 4px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(20, 12, 6, 0.85);
+  color: var(--loa-gold-light);
+  border: 1px solid var(--loa-gold);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  z-index: 2;
+}
+
 .loa-slot-action,
 .loa-slot-trash {
   position: absolute;
