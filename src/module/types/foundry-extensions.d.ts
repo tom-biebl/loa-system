@@ -108,6 +108,18 @@ declare class Dialog {
   static confirm(opts: AnyObject): Promise<boolean>;
 }
 
+declare class Application {
+  rendered: boolean;
+  options: AnyObject;
+  static get defaultOptions(): AnyObject;
+  getData(options?: unknown): AnyObject | Promise<AnyObject>;
+  activateListeners(html: JQuery | HTMLElement): void;
+  render(force?: boolean, options?: AnyObject): this;
+  close(options?: AnyObject): Promise<unknown>;
+}
+
+declare const canvas: any;
+
 declare const game: any;
 declare const ui: any;
 declare const Hooks: any;

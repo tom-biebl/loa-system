@@ -17,6 +17,7 @@ import { AttackService } from "./module/combat/AttackService.js";
 import { TargetService } from "./module/combat/TargetService.js";
 import { ReactionService } from "./module/combat/ReactionService.js";
 import { ReactionOfferService } from "./module/combat/ReactionOfferService.js";
+import { QuickActionMenu } from "./module/ui/QuickActionMenu.js";
 import { AbilityUseService } from "./module/abilities/AbilityUseService.js";
 import { ClassManager } from "./module/classes/ClassManager.js";
 import { ExperienceService } from "./module/experience/ExperienceService.js";
@@ -48,6 +49,7 @@ registerHooks();
   TargetService,
   ReactionService,
   ReactionOfferService,
+  QuickActionMenu,
   AbilityUseService,
   ClassManager,
   ExperienceService,

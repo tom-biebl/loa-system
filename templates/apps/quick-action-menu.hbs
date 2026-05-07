@@ -1,0 +1,106 @@
+<section class="loa-quick-action-menu">
+  {{#if hasActor}}
+    <header class="qa-header">
+      <strong>{{actorName}}</strong>
+    </header>
+
+    <section class="qa-section">
+      <h3>Waffen</h3>
+      {{#if weapons.length}}
+        <div class="qa-list">
+          {{#each weapons as |w|}}
+            <div class="qa-row" data-item-id="{{w.id}}">
+              <img src="{{w.img}}" />
+              <div class="qa-meta">
+                <strong>{{w.name}}</strong>
+                <span class="qa-sub">{{w.damage}} {{w.damageType}} · {{w.range}} · {{w.actionCostLabel}}</span>
+              </div>
+              <button type="button" class="qa-btn" data-loa-action="attack-weapon" data-item-id="{{w.id}}">Angreifen</button>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="qa-empty">Keine Waffen.</p>
+      {{/if}}
+    </section>
+
+    <section class="qa-section">
+      <h3>Zauber</h3>
+      {{#if spells.length}}
+        <div class="qa-list">
+          {{#each spells as |s|}}
+            <div class="qa-row" data-item-id="{{s.id}}">
+              <img src="{{s.img}}" />
+              <div class="qa-meta">
+                <strong>{{s.name}}</strong>
+                <span class="qa-sub">
+                  {{s.effectKindLabel}} ·
+                  {{#if s.isCantrip}}Cantrip{{else}}Stufe {{s.level}} · {{s.resonanceCost}} RP{{/if}}
+                  · {{s.actionCostLabel}}
+                </span>
+              </div>
+              <button type="button" class="qa-btn" data-loa-action="cast-spell" data-item-id="{{s.id}}">Wirken</button>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="qa-empty">Keine Zauber.</p>
+      {{/if}}
+    </section>
+
+    <section class="qa-section">
+      <h3>Consumables</h3>
+      {{#if consumables.length}}
+        <div class="qa-list">
+          {{#each consumables as |c|}}
+            <div class="qa-row" data-item-id="{{c.id}}">
+              <img src="{{c.img}}" />
+              <div class="qa-meta">
+                <strong>{{c.name}}</strong>
+                <span class="qa-sub">×{{c.quantity}} · {{c.actionCostLabel}}</span>
+              </div>
+              <button
+                type="button"
+                class="qa-btn"
+                data-loa-action="use-consumable"
+                data-item-id="{{c.id}}"
+                {{#unless c.canUse}}disabled{{/unless}}
+              >Benutzen</button>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="qa-empty">Keine Consumables.</p>
+      {{/if}}
+    </section>
+
+    <section class="qa-section">
+      <h3>Fähigkeiten</h3>
+      {{#if abilities.length}}
+        <div class="qa-list">
+          {{#each abilities as |a|}}
+            <div class="qa-row" data-item-id="{{a.id}}">
+              <img src="{{a.img}}" />
+              <div class="qa-meta">
+                <strong>{{a.name}}</strong>
+                <span class="qa-sub">
+                  {{a.effectKindLabel}} · {{a.actionCostLabel}}
+                  {{#if a.reactionSummary}} · {{a.reactionSummary}}{{/if}}
+                </span>
+              </div>
+              {{#if a.isReaction}}
+                <span class="qa-badge">Reaktiv</span>
+              {{else}}
+                <button type="button" class="qa-btn" data-loa-action="use-ability" data-item-id="{{a.id}}">Verwenden</button>
+              {{/if}}
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="qa-empty">Keine Fähigkeiten.</p>
+      {{/if}}
+    </section>
+  {{else}}
+    <p class="qa-empty">Kein Charakter ausgewählt. Wähle ein Token oder weise dir einen Charakter zu.</p>
+  {{/if}}
+</section>

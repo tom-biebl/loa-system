@@ -372,6 +372,127 @@
   padding-left: 8px;
 }
 
+/* -------------------- Quick Action Menu --------------------- */
+
+.loa-quick-action-menu-app .window-content {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 240, 210, 0.55), transparent 45%),
+    var(--loa-parchment, #f1e3c4);
+  color: var(--loa-ink, #2a1810);
+  font-family: "Signika", "Palatino Linotype", serif;
+  padding: 12px;
+}
+
+.loa-quick-action-menu .qa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--loa-leather, #6b4423);
+  font-size: 14px;
+  color: var(--loa-leather-dark, #3a2418);
+}
+
+.loa-quick-action-menu .qa-section {
+  margin-bottom: 12px;
+}
+
+.loa-quick-action-menu .qa-section h3 {
+  margin: 6px 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--loa-leather-dark, #3a2418);
+  border-bottom: 1px solid var(--loa-leather-light, #8b6440);
+  padding-bottom: 2px;
+}
+
+.loa-quick-action-menu .qa-list {
+  display: grid;
+  gap: 6px;
+}
+
+.loa-quick-action-menu .qa-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.6);
+  border: 1px solid var(--loa-leather, #6b4423);
+}
+
+.loa-quick-action-menu .qa-row img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--loa-leather-light, #8b6440);
+}
+
+.loa-quick-action-menu .qa-meta {
+  min-width: 0;
+}
+
+.loa-quick-action-menu .qa-meta strong {
+  display: block;
+  color: var(--loa-leather-dark, #3a2418);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loa-quick-action-menu .qa-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--loa-ink-soft, #4a3424);
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loa-quick-action-menu .qa-btn {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--loa-leather-dark, #3a2418);
+  background: linear-gradient(180deg, var(--loa-gold-light, #c9a458), var(--loa-gold, #a3812e));
+  color: var(--loa-ink, #2a1810);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.loa-quick-action-menu .qa-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.loa-quick-action-menu .qa-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.loa-quick-action-menu .qa-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--loa-leather-dark, #3a2418);
+  border: 1px solid var(--loa-leather-light, #8b6440);
+}
+
+.loa-quick-action-menu .qa-empty {
+  margin: 4px 0;
+  font-size: 11px;
+  color: var(--loa-ink-soft, #4a3424);
+  font-style: italic;
+}
+
 /* -------------------- Attribute ----------------------------- */
 
 .loa-attributes {

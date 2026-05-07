@@ -2,7 +2,7 @@
   "id": "loa-system",
   "title": "LoA System",
   "description": "Foundry VTT system for Legends of Arxanum.",
-  "version": "0.9.0",
+  "version": "0.1.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
