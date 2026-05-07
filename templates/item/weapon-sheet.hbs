@@ -9,19 +9,13 @@
 
   <section class="loa-item-body">
     <div class="loa-field-grid">
-      <label>Schaden
-        <input name="system.damage" type="text" value="{{system.damage}}" />
-      </label>
-      <label>Schadensart
-        <input name="system.damageType" type="text" value="{{system.damageType}}" />
-      </label>
-      <label>Angriffsbonus
-        <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
-      </label>
-      <label>Attribut
-        <select name="system.attribute">
-          <option value="str" {{#if (eq system.attribute 'str')}}selected{{/if}}>Stärke</option>
-          <option value="dex" {{#if (eq system.attribute 'dex')}}selected{{/if}}>Geschicklichkeit</option>
+      <label>Effekt-Art
+        <select name="system.effectKind" data-loa-effect-kind>
+          <option value="damage"                 {{#if (eq system.effectKind 'damage')}}selected{{/if}}>Schaden</option>
+          <option value="heal"                   {{#if (eq system.effectKind 'heal')}}selected{{/if}}>Heilung</option>
+          <option value="utility"                {{#if (eq system.effectKind 'utility')}}selected{{/if}}>Utility (Chat)</option>
+          <option value="reaction_reduce_damage" {{#if (eq system.effectKind 'reaction_reduce_damage')}}selected{{/if}}>Reaktion: Schadensreduktion</option>
+          <option value="reaction_custom"        {{#if (eq system.effectKind 'reaction_custom')}}selected{{/if}}>Reaktion: Custom</option>
         </select>
       </label>
       <label>Reichweite
@@ -34,7 +28,7 @@
         <input name="system.slots" type="number" min="0" value="{{system.slots}}" />
       </label>
       <label>Aktionskosten
-        <select name="system.actionCost">
+        <select name="system.actionCost" data-loa-action-cost>
           <option value="action"      {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
           <option value="bonusAction" {{#if (eq system.actionCost 'bonusAction')}}selected{{/if}}>Bonusaktion</option>
           <option value="reaction"    {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
@@ -42,6 +36,79 @@
         </select>
       </label>
     </div>
+
+    {{#if (eq system.effectKind 'damage')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Schaden</legend>
+        <div class="loa-field-grid">
+          <label>Schaden
+            <input name="system.damage" type="text" value="{{system.damage}}" />
+          </label>
+          <label>Schadensart
+            <input name="system.damageType" type="text" value="{{system.damageType}}" />
+          </label>
+          <label>Angriffsbonus
+            <input name="system.attackBonus" type="number" value="{{system.attackBonus}}" />
+          </label>
+          <label>Attribut
+            <select name="system.attribute">
+              <option value="str" {{#if (eq system.attribute 'str')}}selected{{/if}}>Stärke</option>
+              <option value="dex" {{#if (eq system.attribute 'dex')}}selected{{/if}}>Geschicklichkeit</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'heal')}}
+      <fieldset class="loa-effect-fields">
+        <legend>Heilung</legend>
+        <div class="loa-field-grid">
+          <label>Heilungs-Formel
+            <input name="system.healFormula" type="text" value="{{system.healFormula}}" placeholder="1d6 + 2" />
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'utility')}}
+      <p class="loa-muted loa-mini">
+        Utility-Waffen posten beim Verwenden nur eine Chat-Nachricht mit der Beschreibung.
+      </p>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'reaction_reduce_damage')}}
+      <fieldset class="loa-effect-fields loa-effect-reaction">
+        <legend>Reaktion: Schadensreduktion</legend>
+        <div class="loa-field-grid">
+          <label>Reduktions-Formel
+            <input name="system.reactionFormula" type="text" value="{{system.reactionFormula}}" placeholder="5 oder 1d6" />
+          </label>
+          <label class="loa-checkbox">
+            <input name="system.reactionRolled" type="checkbox" {{#if system.reactionRolled}}checked{{/if}} />
+            Wurf gegen DC
+          </label>
+          <label>Wurf-Attribut
+            <select name="system.reactionAttribute">
+              <option value="str" {{#if (eq system.reactionAttribute 'str')}}selected{{/if}}>Stärke</option>
+              <option value="dex" {{#if (eq system.reactionAttribute 'dex')}}selected{{/if}}>Geschick</option>
+              <option value="con" {{#if (eq system.reactionAttribute 'con')}}selected{{/if}}>Konstitution</option>
+              <option value="int" {{#if (eq system.reactionAttribute 'int')}}selected{{/if}}>Intelligenz</option>
+              <option value="wis" {{#if (eq system.reactionAttribute 'wis')}}selected{{/if}}>Weisheit</option>
+              <option value="cha" {{#if (eq system.reactionAttribute 'cha')}}selected{{/if}}>Charisma</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'reaction_custom')}}
+      <fieldset class="loa-effect-fields loa-effect-reaction">
+        <legend>Reaktion: Custom</legend>
+        <label>Chat-Nachricht</label>
+        <textarea name="system.reactionMessage">{{system.reactionMessage}}</textarea>
+      </fieldset>
+    {{/if}}
 
     <label>Beschreibung</label>
     <textarea name="system.description">{{system.description}}</textarea>

@@ -10,7 +10,16 @@ export type ActionCost = "action" | "bonusAction" | "reaction" | "freeAction";
  * - `reaction` → wird NICHT direkt ausgelöst; erscheint im Pending-Damage-Dialog
  *                des Verteidigers und reduziert den eingehenden Schaden
  */
-export type EffectKind = "damage" | "heal" | "utility" | "reaction";
+export type EffectKind =
+  | "damage"
+  | "heal"
+  | "utility"
+  /** @deprecated Alter Sammelwert. Neue Items nutzen konkrete reaction_* Werte. */
+  | "reaction"
+  | "reaction_reduce_damage"
+  | "reaction_counter"
+  | "reaction_dodge"
+  | "reaction_custom";
 
 /**
  * Wie eine Reaktion mechanisch wirkt.
@@ -27,9 +36,13 @@ interface BaseItemData {
 }
 
 interface ReactionFields {
+  /** Wenn true, muss die Reaktion zuerst gegen die Pending-Damage-DC gelingen. */
+  reactionRolled: boolean;
   reactionMode: ReactionMode;
   reactionFormula: string;
   reactionAttribute: AttributeKey;
+  /** Freitext für Custom-Reaktionen, wird beim Nutzen in den Chat gepostet. */
+  reactionMessage: string;
   /** Trigger, der diese Reaktion anbietet. Architektur-Feld, derzeit Default `before_damage_applied`. */
   reactionTrigger: string;
   /** Optional: Reaktions-Art (dodge / counter / reduce_damage / ...). */
@@ -41,9 +54,14 @@ interface DefendableFields {
   reactionDC: number;
 }
 
-export interface WeaponSystemData extends BaseItemData {
+export interface WeaponSystemData
+  extends BaseItemData,
+    ReactionFields,
+    DefendableFields {
+  effectKind: EffectKind;
   damage: string;
   damageType: string;
+  healFormula: string;
   attackBonus: number;
   attribute: AttributeKey;
   range: string;

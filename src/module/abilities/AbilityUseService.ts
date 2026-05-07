@@ -1,3 +1,4 @@
+import type { AttributeKey } from "../constants/system.constants.js";
 import type { EffectKind } from "../types/item.types.js";
 import { TargetService } from "../combat/TargetService.js";
 import { ReactionService } from "../combat/ReactionService.js";
@@ -19,13 +20,14 @@ interface AbilityLike {
     damage?: string;
     damageType?: string;
     healFormula?: string;
+    attribute?: AttributeKey;
     description?: string;
   };
 }
 
 /**
  * Sheet-getriggerte Ausführung einer Ability.
- * Reaction-Abilities haben hier KEINEN eigenen „Verwenden"-Pfad — die werden
+ * Reaction-Abilities haben hier KEINEN eigenen "Verwenden"-Pfad - die werden
  * ausschließlich über den Pending-Damage-Dialog (ReactionService) ausgelöst.
  */
 interface UseOptions {
@@ -36,16 +38,15 @@ export class AbilityUseService {
   static async use(
     actor: AbilityActor,
     ability: AbilityLike,
-    options: UseOptions = {},
+    _options: UseOptions = {},
   ): Promise<void> {
     const speaker = ChatMessage.getSpeaker({ actor });
     const kind = (ability.system.effectKind ?? "utility") as EffectKind;
     const name = ability.name ?? "Fähigkeit";
-    const dc = options.dc ?? null;
 
     switch (kind) {
       case "damage":
-        await AbilityUseService.execDamage(actor, ability, speaker, name, dc);
+        await AbilityUseService.execDamage(actor, ability, speaker, name);
         return;
       case "heal":
         await AbilityUseService.execHeal(actor, ability, speaker, name);
@@ -67,7 +68,6 @@ export class AbilityUseService {
     ability: AbilityLike,
     speaker: unknown,
     name: string,
-    dc: number | null,
   ): Promise<void> {
     const formula = ability.system.damage;
     if (!formula) {
@@ -75,6 +75,8 @@ export class AbilityUseService {
       return;
     }
     const damageType = ability.system.damageType ?? "physical";
+    const attribute = (ability.system.attribute ?? "str") as AttributeKey;
+    const attrMod = actor.system.attributes?.[attribute]?.modifier ?? 0;
     const damageRoll = await RollManager.evaluate(formula);
     await RollManager.postRoll(damageRoll, {
       speaker,
@@ -95,7 +97,8 @@ export class AbilityUseService {
           damage,
           damageType,
           source: name,
-          dc,
+          sourceItemType: "ability",
+          dc: 8 + attrMod,
         });
       } catch (error) {
         Logger.warn("AbilityUseService: pending damage failed", error);

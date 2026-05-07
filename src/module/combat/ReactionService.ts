@@ -1,6 +1,6 @@
 import { SYSTEM_ID, SYSTEM_LABEL } from "../constants/system.constants.js";
 import type { AttributeKey } from "../constants/system.constants.js";
-import type { ReactionMode } from "../types/item.types.js";
+import type { EffectKind, ReactionMode } from "../types/item.types.js";
 import { DamageService } from "./DamageService.js";
 import { ActionEconomyService } from "./ActionEconomy.js";
 import { ChatCardRenderer } from "../chat/ChatCardRenderer.js";
@@ -8,17 +8,20 @@ import { RollManager } from "../rolls/RollManager.js";
 import { RollFormulaBuilder } from "../rolls/RollFormulaBuilder.js";
 import { Logger } from "../utils/Logger.js";
 
+type ReactionKind = "reduce_damage" | "counter" | "dodge" | "custom";
+
 interface PendingDamageFlags {
   kind: "pending-damage";
   attackerName: string;
   targetActorId: string;
   targetName: string;
   source: string;
+  sourceItemType: string | null;
   damage: number;
   damageType: string;
   reactionUsed: string | null;
   resolved: boolean;
-  /** Reaktions-DC, gegen die rolled/counter-Reaktionen würfeln. null = keine DC verfügbar (z.B. Waffenangriff). */
+  /** DC = 8 + Modifier des Primär-Attributs des angreifenden Items. */
   dc: number | null;
 }
 
@@ -30,28 +33,31 @@ interface CreatePendingOptions {
   damage: number;
   damageType: string;
   source: string;
+  sourceItemType?: string | null;
   dc: number | null;
 }
 
 interface ReactionEntry {
   id: string;
   name: string;
-  mode: ReactionMode;
+  itemType: string;
+  kind: ReactionKind;
+  rolled: boolean;
   formula: string;
   attribute: AttributeKey;
-  /** Kann gegen den aktuellen Pending-Damage tatsächlich verwendet werden. */
+  message: string;
   applicable: boolean;
-  /** Erklärung, warum nicht (für Tooltip). */
   unavailableReason: string | null;
 }
 
 /**
  * Workflow für die Verteidiger-Reaktion auf einen Treffer.
  *
- * Reaktionen sind Items mit `effectKind === "reaction"` und einer `reactionMode`:
- *   flat    → Reduktion = Formel (Wurf oder Zahl)
- *   rolled  → 1d20 + Attribut vs. Pending-DC; Erfolg → Reduktion = Formel
- *   counter → 1d20 + Attribut vs. Pending-DC; Erfolg → Schaden = 0
+ * Reaktionen sind Items mit konkretem `effectKind`:
+ * - `reaction_reduce_damage` reduziert Schaden um Formel/Fixwert
+ * - `reaction_counter` negiert Zauber-Schaden
+ * - `reaction_dodge` negiert Schaden durch Ausweichen
+ * - `reaction_custom` postet eine frei gepflegte Chat-Nachricht
  */
 export class ReactionService {
   static async createPending(options: CreatePendingOptions): Promise<unknown> {
@@ -61,6 +67,7 @@ export class ReactionService {
       targetActorId: String(options.targetActor.id ?? ""),
       targetName: options.targetActor.name ?? "Ziel",
       source: options.source,
+      sourceItemType: options.sourceItemType ?? null,
       damage: options.damage,
       damageType: options.damageType,
       reactionUsed: null,
@@ -81,7 +88,10 @@ export class ReactionService {
   static getFlags(message: any): PendingDamageFlags | null {
     const flags = message?.flags?.[FLAG_SCOPE] ?? message?.getFlag?.(FLAG_SCOPE);
     if (!flags || flags.kind !== "pending-damage") return null;
-    return flags as PendingDamageFlags;
+    return {
+      sourceItemType: null,
+      ...flags,
+    } as PendingDamageFlags;
   }
 
   static canInteract(targetActor: any): boolean {
@@ -138,7 +148,7 @@ export class ReactionService {
         })),
       });
       ui.notifications?.info(
-        `Auf ${target.name} ist kein Item mit Effekt-Art „Reaktion" angelegt. Erstelle eine Ability oder einen Spell mit effectKind=Reaktion.`,
+        `Auf ${target.name} ist kein Reaktions-Item angelegt.`,
       );
       return;
     }
@@ -173,18 +183,12 @@ export class ReactionService {
     const flags = ReactionService.getFlags(message);
     if (!flags || flags.resolved) return;
 
-    const item = target.items?.get?.(reactionItemId);
-    if (!item) return;
-
-    const mode = (item.system?.reactionMode ?? "flat") as ReactionMode;
-    const formula = String(item.system?.reactionFormula ?? "0");
-    const attribute = (item.system?.reactionAttribute ?? "int") as AttributeKey;
-    const speaker = ChatMessage.getSpeaker({ actor: target });
-
-    if ((mode === "rolled" || mode === "counter") && flags.dc === null) {
-      ui.notifications?.warn(
-        "Diese Reaktion benötigt eine Reaktions-DC — der Angriff hat keine.",
-      );
+    const reaction = ReactionService.collectReactions(target, flags).find(
+      (entry) => entry.id === reactionItemId,
+    );
+    if (!reaction) return;
+    if (!reaction.applicable) {
+      ui.notifications?.warn(reaction.unavailableReason ?? "Reaktion nicht verfügbar.");
       return;
     }
 
@@ -194,42 +198,59 @@ export class ReactionService {
       return;
     }
 
-    let reduction = 0;
-    let summary = item.name ?? "Reaktion";
+    const speaker = ChatMessage.getSpeaker({ actor: target });
+    const rollResult = reaction.rolled
+      ? await ReactionService.rollReactionCheck(target, reaction, flags, speaker)
+      : { success: true, summary: "" };
 
-    switch (mode) {
-      case "flat": {
-        reduction = await ReactionService.evaluateFormula(formula, speaker, `${item.name} → Block`);
-        summary = `${item.name} (-${reduction})`;
-        break;
-      }
-      case "rolled":
-      case "counter": {
-        const dc = flags.dc as number;
-        const attrMod = Number(target.system?.attributes?.[attribute]?.modifier ?? 0);
-        const checkRoll = await RollManager.evaluate(
-          RollFormulaBuilder.d20WithModifier(attrMod),
-        );
-        await RollManager.postRoll(checkRoll, {
-          speaker,
-          flavor: `${item.name} → Wurf vs DC ${dc}`,
-        });
-        const total = Number(checkRoll.total ?? 0);
-        const success = total >= dc;
-        if (!success) {
-          summary = `${item.name} (Wurf ${total} vs DC ${dc} → fehlgeschlagen)`;
-        } else if (mode === "counter") {
-          reduction = flags.damage;
-          summary = `${item.name} (Wurf ${total} vs DC ${dc} → Gegenzauber gelingt)`;
-        } else {
+    let reduction = 0;
+    let summary = reaction.name;
+
+    if (!rollResult.success) {
+      summary = `${reaction.name} (${rollResult.summary} fehlgeschlagen)`;
+    } else {
+      switch (reaction.kind) {
+        case "reduce_damage": {
           reduction = await ReactionService.evaluateFormula(
-            formula,
+            reaction.formula,
             speaker,
-            `${item.name} → Reduktion`,
+            `${reaction.name} → Reduktion`,
           );
-          summary = `${item.name} (Wurf ${total} vs DC ${dc} → Erfolg, -${reduction})`;
+          summary = ReactionService.withRollSummary(
+            `${reaction.name} (-${reduction})`,
+            rollResult.summary,
+          );
+          break;
         }
-        break;
+        case "counter": {
+          reduction = flags.damage;
+          summary = ReactionService.withRollSummary(
+            `${reaction.name} (Counter gelingt)`,
+            rollResult.summary,
+          );
+          break;
+        }
+        case "dodge": {
+          reduction = flags.damage;
+          summary = ReactionService.withRollSummary(
+            `${reaction.name} (Ausweichen gelingt)`,
+            rollResult.summary,
+          );
+          break;
+        }
+        case "custom": {
+          await ChatCardRenderer.renderUtility({
+            speaker,
+            actorName: target.name ?? "Unbekannt",
+            itemName: reaction.name,
+            description: reaction.message || "Reaktion ausgelöst.",
+          });
+          summary = ReactionService.withRollSummary(
+            `${reaction.name} (Custom)`,
+            rollResult.summary,
+          );
+          break;
+        }
       }
     }
 
@@ -245,15 +266,43 @@ export class ReactionService {
     });
     Logger.info("Reaction used", {
       actor: target.name,
-      item: item.name,
-      mode,
+      item: reaction.name,
+      kind: reaction.kind,
       reduction,
     });
   }
 
+  private static async rollReactionCheck(
+    target: any,
+    reaction: ReactionEntry,
+    flags: PendingDamageFlags,
+    speaker: unknown,
+  ): Promise<{ success: boolean; summary: string }> {
+    if (flags.dc === null) {
+      return { success: false, summary: "keine DC verfügbar" };
+    }
+    const attrMod = Number(target.system?.attributes?.[reaction.attribute]?.modifier ?? 0);
+    const checkRoll = await RollManager.evaluate(
+      RollFormulaBuilder.d20WithModifier(attrMod),
+    );
+    await RollManager.postRoll(checkRoll, {
+      speaker,
+      flavor: `${reaction.name} → Wurf vs DC ${flags.dc}`,
+    });
+    const total = Number(checkRoll.total ?? 0);
+    return {
+      success: total >= flags.dc,
+      summary: `Wurf ${total} vs DC ${flags.dc}`,
+    };
+  }
+
+  private static withRollSummary(base: string, rollSummary: string): string {
+    return rollSummary ? `${base} (${rollSummary})` : base;
+  }
+
   /**
    * Wertet eine Reduktions-Formel aus.
-   * Reine Zahl wie `5` → 5. Würfelformel wie `1d6+2` → würfeln + zur Chat posten.
+   * Reine Zahl wie `5` -> 5. Würfelformel wie `1d6+2` -> würfeln + zur Chat posten.
    */
   private static async evaluateFormula(
     formula: string,
@@ -275,64 +324,114 @@ export class ReactionService {
     }
   }
 
-  /**
-   * Sammelt alle Reaktions-Items des Actors. Items mit `effectKind: "reaction"`
-   * werden bevorzugt — Items, die nur via veraltetem `damageReduction`-Feld
-   * konfiguriert sind, werden als flat-Reaktion mitgenommen.
-   */
   private static collectReactions(actor: any, flags: PendingDamageFlags): ReactionEntry[] {
     const items = actor.items?.contents ?? [];
     const result: ReactionEntry[] = [];
     for (const item of items) {
       const sys = item.system ?? {};
-      const isReactionKind = sys.effectKind === "reaction";
       const legacyReduction = Number(sys.damageReduction ?? 0);
-      const hasLegacy =
-        !isReactionKind && legacyReduction > 0 && sys.actionCost === "reaction";
+      const reactionKind = ReactionService.resolveReactionKind(
+        sys.effectKind,
+        sys.reactionMode,
+        sys.reactionTypeKey,
+        legacyReduction,
+      );
+      if (!reactionKind) continue;
 
-      if (!isReactionKind && !hasLegacy) continue;
-
-      const mode: ReactionMode = isReactionKind
-        ? ((sys.reactionMode ?? "flat") as ReactionMode)
-        : "flat";
-      const formula = isReactionKind ? String(sys.reactionFormula ?? "0") : String(legacyReduction);
-      const attribute = (sys.reactionAttribute ?? "int") as AttributeKey;
-
-      const needsDC = mode === "rolled" || mode === "counter";
-      const applicable = !needsDC || flags.dc !== null;
-      const unavailableReason = applicable
-        ? null
-        : "Diese Reaktion verlangt eine DC, der Angriff hat keine.";
-
-      result.push({
+      const rolled =
+        Boolean(sys.reactionRolled) ||
+        (sys.effectKind === "reaction" &&
+          (sys.reactionMode === "rolled" || sys.reactionMode === "counter"));
+      const formula =
+        sys.effectKind === "reaction" || legacyReduction <= 0
+          ? String(sys.reactionFormula ?? "0")
+          : String(legacyReduction);
+      const entry: ReactionEntry = {
         id: String(item.id ?? ""),
         name: String(item.name ?? "Reaktion"),
-        mode,
+        itemType: String(item.type ?? ""),
+        kind: reactionKind,
+        rolled,
         formula,
-        attribute,
-        applicable,
-        unavailableReason,
-      });
+        attribute: (sys.reactionAttribute ?? "int") as AttributeKey,
+        message: String(sys.reactionMessage ?? sys.description ?? ""),
+        applicable: true,
+        unavailableReason: null,
+      };
+
+      ReactionService.applyAvailability(entry, flags);
+      result.push(entry);
     }
     return result;
   }
 
-  private static formatReactionLabel(entry: ReactionEntry): string {
-    const modeLabel =
-      entry.mode === "flat"
-        ? `Block ${entry.formula}`
-        : entry.mode === "counter"
-        ? `Gegenzauber (${entry.attribute})`
-        : `Wurf ${entry.attribute} → ${entry.formula}`;
-    if (!entry.applicable) {
-      return `${entry.name} — ${modeLabel} (nicht verfügbar)`;
+  private static resolveReactionKind(
+    effectKind: EffectKind | string | undefined,
+    reactionMode: ReactionMode | string | undefined,
+    reactionTypeKey: string | undefined,
+    legacyReduction: number,
+  ): ReactionKind | null {
+    switch (effectKind) {
+      case "reaction_reduce_damage":
+        return "reduce_damage";
+      case "reaction_counter":
+        return "counter";
+      case "reaction_dodge":
+        return "dodge";
+      case "reaction_custom":
+        return "custom";
+      case "reaction":
+        return reactionMode === "counter" ? "counter" : "reduce_damage";
+      default:
+        if (legacyReduction > 0) return "reduce_damage";
+        if (reactionTypeKey === "counter") return "counter";
+        if (reactionTypeKey === "dodge") return "dodge";
+        if (reactionTypeKey === "custom") return "custom";
+        return null;
     }
-    return `${entry.name} · ${modeLabel}`;
+  }
+
+  private static applyAvailability(entry: ReactionEntry, flags: PendingDamageFlags): void {
+    if (entry.kind === "counter" && entry.itemType !== "spell") {
+      entry.applicable = false;
+      entry.unavailableReason = "Counter ist nur mit Spell-Reaktionen möglich.";
+      return;
+    }
+    if (entry.kind === "counter" && flags.sourceItemType !== "spell") {
+      entry.applicable = false;
+      entry.unavailableReason = "Counter kann nur gegen Zauber genutzt werden.";
+      return;
+    }
+    if (entry.kind === "dodge" && entry.itemType !== "ability") {
+      entry.applicable = false;
+      entry.unavailableReason = "Dodge ist nur mit Ability-Reaktionen möglich.";
+      return;
+    }
+    if (entry.rolled && flags.dc === null) {
+      entry.applicable = false;
+      entry.unavailableReason = "Diese Reaktion verlangt eine DC, der Angriff hat keine.";
+    }
+  }
+
+  private static formatReactionLabel(entry: ReactionEntry): string {
+    const kindLabel =
+      entry.kind === "reduce_damage"
+        ? `Schadensreduktion ${entry.formula}`
+        : entry.kind === "counter"
+        ? "Counter"
+        : entry.kind === "dodge"
+        ? "Dodge"
+        : "Custom";
+    const rollLabel = entry.rolled ? ` · Wurf ${entry.attribute}` : "";
+    if (!entry.applicable) {
+      return `${entry.name} — ${kindLabel}${rollLabel} (nicht verfügbar)`;
+    }
+    return `${entry.name} · ${kindLabel}${rollLabel}`;
   }
 
   /**
-   * Dialog: fragt nach der Reaktions-DC, mit der eingehende Reaktionen würfeln.
-   * Aufgerufen von Spell/Ability-Cast vor `createPending`. Liefert null bei Abbruch.
+   * Legacy-Dialog für alte Aufrufer. Neue Damage-Quellen berechnen die DC
+   * automatisch als 8 + Modifier des Primär-Attributs.
    */
   static async promptDC(itemName: string, defaultDC: number): Promise<number | null> {
     return new Promise((resolve) => {

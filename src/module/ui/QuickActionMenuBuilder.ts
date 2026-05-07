@@ -50,6 +50,10 @@ const KIND_LABELS: Record<string, string> = {
   heal: "Heilung",
   utility: "Utility",
   reaction: "Reaktion",
+  reaction_reduce_damage: "Reaktion: Schadensreduktion",
+  reaction_counter: "Reaktion: Counter",
+  reaction_dodge: "Reaktion: Dodge",
+  reaction_custom: "Reaktion: Custom",
 };
 
 /**
@@ -149,15 +153,27 @@ export class QuickActionMenuBuilder {
       .map((it) => {
         const sys = it.system ?? {};
         const kind = String(sys.effectKind ?? "utility");
-        const isReaction = kind === "reaction";
+        const isReaction =
+          kind === "reaction" ||
+          kind.startsWith("reaction_") ||
+          String(sys.actionCost ?? "") === "reaction";
         const mode = String(sys.reactionMode ?? "flat");
         const formula = String(sys.reactionFormula ?? "0");
         const attribute = String(sys.reactionAttribute ?? "int");
+        const rolled = Boolean(sys.reactionRolled);
         let reactionSummary = "";
         if (isReaction) {
-          if (mode === "flat") reactionSummary = `Block ${formula}`;
-          else if (mode === "counter") reactionSummary = `Gegenzauber (${attribute})`;
+          if (kind === "reaction_reduce_damage" || kind === "reaction") {
+            reactionSummary = `Block ${formula}`;
+          } else if (kind === "reaction_counter") {
+            reactionSummary = `Gegenzauber (${attribute})`;
+          } else if (kind === "reaction_dodge") {
+            reactionSummary = `Dodge (${attribute})`;
+          } else if (kind === "reaction_custom") {
+            reactionSummary = "Custom";
+          } else if (mode === "counter") reactionSummary = `Gegenzauber (${attribute})`;
           else reactionSummary = `Wurf ${attribute} → ${formula}`;
+          if (rolled) reactionSummary = `${reactionSummary} · Wurf`;
         }
         return {
           id: String(it.id ?? ""),

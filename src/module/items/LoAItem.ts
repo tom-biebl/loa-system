@@ -10,14 +10,13 @@ import { Logger } from "../utils/Logger.js";
 import { SpellCastService } from "../magic/SpellCastService.js";
 import { AttackService } from "../combat/AttackService.js";
 import { AbilityUseService } from "../abilities/AbilityUseService.js";
-import { ReactionService } from "../combat/ReactionService.js";
 import { ActionEconomyService } from "../combat/ActionEconomy.js";
 import { normalizeActionType } from "../constants/action.constants.js";
 import type { LoAActor } from "../actors/LoAActor.js";
 
 /**
  * Foundry Item-Subklasse. Domänenlogik bleibt in Services, das Item selbst
- * orchestriert nur den Ablauf — und prüft, ob die nötige Aktion verfügbar ist.
+ * orchestriert nur den Ablauf - und prüft, ob die nötige Aktion verfügbar ist.
  */
 export class LoAItem extends Item {
   declare type: ItemType;
@@ -37,6 +36,7 @@ export class LoAItem extends Item {
   }
 
   getActionCost(): ActionCost {
+    if (LoAItem.isReactionEffectKind(this.getEffectKind())) return "reaction";
     const value = (this.system as { actionCost?: ActionCost }).actionCost;
     return value ?? "action";
   }
@@ -58,23 +58,15 @@ export class LoAItem extends Item {
       return;
     }
     const kind = this.getEffectKind();
-    if (kind === "reaction") {
+    if (LoAItem.isReactionEffectKind(kind)) {
       ui.notifications?.info(
         "Reaktionen werden über die Pending-Damage-Karte ausgelöst, nicht direkt gewirkt.",
       );
       return;
     }
 
-    // DC-Dialog VOR Action-Cost-Verbrauch — sonst kostet's beim Abbrechen.
-    let dc: number | null = null;
-    if (kind === "damage") {
-      const defaultDC = Number(this.system.reactionDC ?? 10);
-      dc = await ReactionService.promptDC(this.name ?? "Zauber", defaultDC);
-      if (dc === null) return;
-    }
-
     if (!(await this.consumeActionCost(actor))) return;
-    await SpellCastService.cast(actor, this, { dc });
+    await SpellCastService.cast(actor, this);
   }
 
   async attack(): Promise<void> {
@@ -87,7 +79,19 @@ export class LoAItem extends Item {
       ui.notifications?.warn("Angriff benötigt einen Charakter.");
       return;
     }
+    const kind = this.getEffectKind();
+    if (LoAItem.isReactionEffectKind(kind)) {
+      ui.notifications?.info(
+        "Reaktionen werden über die Pending-Damage-Karte ausgelöst, nicht direkt verwendet.",
+      );
+      return;
+    }
+
     if (!(await this.consumeActionCost(actor))) return;
+    if (kind === "heal" || kind === "utility") {
+      await AbilityUseService.use(actor, this);
+      return;
+    }
     await AttackService.rollWeaponAttack(actor, this);
   }
 
@@ -103,22 +107,15 @@ export class LoAItem extends Item {
       return;
     }
     const kind = this.getEffectKind();
-    if (kind === "reaction") {
+    if (LoAItem.isReactionEffectKind(kind)) {
       ui.notifications?.info(
         "Reaktionen werden über die Pending-Damage-Karte ausgelöst, nicht direkt verwendet.",
       );
       return;
     }
 
-    let dc: number | null = null;
-    if (kind === "damage") {
-      const defaultDC = Number((this.system as { reactionDC?: number }).reactionDC ?? 10);
-      dc = await ReactionService.promptDC(this.name ?? "Fähigkeit", defaultDC);
-      if (dc === null) return;
-    }
-
     if (!(await this.consumeActionCost(actor))) return;
-    await AbilityUseService.use(actor, this, { dc });
+    await AbilityUseService.use(actor, this);
   }
 
   private async consumeActionCost(actor: LoAActor): Promise<boolean> {
@@ -126,5 +123,9 @@ export class LoAItem extends Item {
     return ActionEconomyService.spendAction(actor, normalized, {
       description: this.name ?? undefined,
     });
+  }
+
+  private static isReactionEffectKind(kind: EffectKind): boolean {
+    return kind === "reaction" || kind.startsWith("reaction_");
   }
 }

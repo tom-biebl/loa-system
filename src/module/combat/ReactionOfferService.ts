@@ -39,7 +39,8 @@ export class ReactionOfferService {
   static collectFor(actor: any, trigger: ReactionTriggerKey): any[] {
     const items = actor?.items?.contents ?? [];
     return items.filter((item: any) => {
-      if (item.system?.effectKind !== "reaction") return false;
+      const effectKind = String(item.system?.effectKind ?? "");
+      if (effectKind !== "reaction" && !effectKind.startsWith("reaction_")) return false;
       const itemTrigger =
         (item.system?.reactionTrigger as ReactionTriggerKey | undefined) ?? "before_damage_applied";
       return itemTrigger === trigger;

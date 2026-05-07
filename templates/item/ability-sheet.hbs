@@ -10,15 +10,17 @@
   <section class="loa-item-body">
     <div class="loa-field-grid">
       <label>Effekt-Art
-        <select name="system.effectKind">
-          <option value="damage"   {{#if (eq system.effectKind 'damage')}}selected{{/if}}>Schaden</option>
-          <option value="heal"     {{#if (eq system.effectKind 'heal')}}selected{{/if}}>Heilung</option>
-          <option value="utility"  {{#if (eq system.effectKind 'utility')}}selected{{/if}}>Utility (Chat)</option>
-          <option value="reaction" {{#if (eq system.effectKind 'reaction')}}selected{{/if}}>Reaktion (Schadensreduktion)</option>
+        <select name="system.effectKind" data-loa-effect-kind>
+          <option value="damage"                 {{#if (eq system.effectKind 'damage')}}selected{{/if}}>Schaden</option>
+          <option value="heal"                   {{#if (eq system.effectKind 'heal')}}selected{{/if}}>Heilung</option>
+          <option value="utility"                {{#if (eq system.effectKind 'utility')}}selected{{/if}}>Utility (Chat)</option>
+          <option value="reaction_reduce_damage" {{#if (eq system.effectKind 'reaction_reduce_damage')}}selected{{/if}}>Reaktion: Schadensreduktion</option>
+          <option value="reaction_dodge"         {{#if (eq system.effectKind 'reaction_dodge')}}selected{{/if}}>Reaktion: Dodge</option>
+          <option value="reaction_custom"        {{#if (eq system.effectKind 'reaction_custom')}}selected{{/if}}>Reaktion: Custom</option>
         </select>
       </label>
       <label>Aktionskosten
-        <select name="system.actionCost">
+        <select name="system.actionCost" data-loa-action-cost>
           <option value="action"      {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
           <option value="bonusAction" {{#if (eq system.actionCost 'bonusAction')}}selected{{/if}}>Bonusaktion</option>
           <option value="reaction"    {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
@@ -39,9 +41,6 @@
           </label>
           <label>Schadensart
             <input name="system.damageType" type="text" value="{{system.damageType}}" />
-          </label>
-          <label>Standard-Reaktions-DC
-            <input name="system.reactionDC" type="number" min="0" value="{{system.reactionDC}}" />
           </label>
         </div>
       </fieldset>
@@ -65,19 +64,16 @@
       </p>
     {{/if}}
 
-    {{#if (eq system.effectKind 'reaction')}}
+    {{#if (eq system.effectKind 'reaction_reduce_damage')}}
       <fieldset class="loa-effect-fields loa-effect-reaction">
-        <legend>Reaktion</legend>
+        <legend>Reaktion: Schadensreduktion</legend>
         <div class="loa-field-grid">
-          <label>Modus
-            <select name="system.reactionMode">
-              <option value="flat"    {{#if (eq system.reactionMode 'flat')}}selected{{/if}}>Fester Wert (Block)</option>
-              <option value="rolled"  {{#if (eq system.reactionMode 'rolled')}}selected{{/if}}>Wurf vs DC (Reduktion auf Erfolg)</option>
-              <option value="counter" {{#if (eq system.reactionMode 'counter')}}selected{{/if}}>Gegenzauber (Negation auf Erfolg)</option>
-            </select>
-          </label>
           <label>Reduktions-Formel
             <input name="system.reactionFormula" type="text" value="{{system.reactionFormula}}" placeholder="5 oder 1d6" />
+          </label>
+          <label class="loa-checkbox">
+            <input name="system.reactionRolled" type="checkbox" {{#if system.reactionRolled}}checked{{/if}} />
+            Wurf gegen DC
           </label>
           <label>Wurf-Attribut
             <select name="system.reactionAttribute">
@@ -90,12 +86,36 @@
             </select>
           </label>
         </div>
-        <p class="loa-muted loa-mini">
-          Reaktionen werden über die Pending-Damage-Karte des Ziels ausgelöst, nicht direkt verwendet.
-          <strong>Fester Wert:</strong> Reduktion = Formel (z.B. „5" für Block).
-          <strong>Wurf vs DC:</strong> 1d20 + Attribut gegen die Cast-DC; bei Erfolg Reduktion = Formel.
-          <strong>Gegenzauber:</strong> bei Erfolg wird der gesamte Schaden negiert.
-        </p>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'reaction_dodge')}}
+      <fieldset class="loa-effect-fields loa-effect-reaction">
+        <legend>Reaktion: Dodge</legend>
+        <div class="loa-field-grid">
+          <label class="loa-checkbox">
+            <input name="system.reactionRolled" type="checkbox" {{#if system.reactionRolled}}checked{{/if}} />
+            Wurf gegen DC
+          </label>
+          <label>Wurf-Attribut
+            <select name="system.reactionAttribute">
+              <option value="str" {{#if (eq system.reactionAttribute 'str')}}selected{{/if}}>Stärke</option>
+              <option value="dex" {{#if (eq system.reactionAttribute 'dex')}}selected{{/if}}>Geschick</option>
+              <option value="con" {{#if (eq system.reactionAttribute 'con')}}selected{{/if}}>Konstitution</option>
+              <option value="int" {{#if (eq system.reactionAttribute 'int')}}selected{{/if}}>Intelligenz</option>
+              <option value="wis" {{#if (eq system.reactionAttribute 'wis')}}selected{{/if}}>Weisheit</option>
+              <option value="cha" {{#if (eq system.reactionAttribute 'cha')}}selected{{/if}}>Charisma</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+    {{/if}}
+
+    {{#if (eq system.effectKind 'reaction_custom')}}
+      <fieldset class="loa-effect-fields loa-effect-reaction">
+        <legend>Reaktion: Custom</legend>
+        <label>Chat-Nachricht</label>
+        <textarea name="system.reactionMessage">{{system.reactionMessage}}</textarea>
       </fieldset>
     {{/if}}
 

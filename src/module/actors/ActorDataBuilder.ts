@@ -9,6 +9,7 @@ import type {
   SpecialAmmoEntry,
   PotionInventory,
 } from "../types/actor.types.js";
+import type { EffectKind } from "../types/item.types.js";
 import { PointBuyService } from "../attributes/PointBuyService.js";
 import { ResourceManager } from "../resources/ResourceManager.js";
 import { ResonanceManager } from "../magic/ResonanceManager.js";
@@ -93,7 +94,7 @@ interface CombatActionsViewModel {
 }
 
 interface AbilityVM extends InventoryItemVM {
-  effectKind: "damage" | "heal" | "utility" | "reaction";
+  effectKind: EffectKind;
   effectKindLabel: string;
   actionCost: "action" | "bonus" | "reaction" | "free";
   actionCostLabel: string;
@@ -485,6 +486,10 @@ export class ActorDataBuilder {
       heal: "Heilung",
       utility: "Utility",
       reaction: "Reaktion",
+      reaction_reduce_damage: "Reaktion: Schadensreduktion",
+      reaction_counter: "Reaktion: Counter",
+      reaction_dodge: "Reaktion: Dodge",
+      reaction_custom: "Reaktion: Custom",
     };
     const costLabels: Record<string, string> = {
       action: "Aktion",
@@ -506,17 +511,28 @@ export class ActorDataBuilder {
         const reactionMode = String(sys.reactionMode ?? "flat");
         const reactionFormula = String(sys.reactionFormula ?? "0");
         const reactionAttribute = String(sys.reactionAttribute ?? "int");
-        const isReaction = effectKind === "reaction" || actionCost === "reaction";
+        const reactionRolled = Boolean(sys.reactionRolled);
+        const isReaction =
+          effectKind === "reaction" ||
+          effectKind.startsWith("reaction_") ||
+          actionCost === "reaction";
 
         let reactionSummary = "";
-        if (effectKind === "reaction") {
-          if (reactionMode === "flat") {
+        if (isReaction) {
+          if (effectKind === "reaction_reduce_damage" || effectKind === "reaction") {
             reactionSummary = `Block ${reactionFormula}`;
+          } else if (effectKind === "reaction_counter") {
+            reactionSummary = `Gegenzauber (${reactionAttribute})`;
+          } else if (effectKind === "reaction_dodge") {
+            reactionSummary = `Dodge (${reactionAttribute})`;
+          } else if (effectKind === "reaction_custom") {
+            reactionSummary = "Custom";
           } else if (reactionMode === "counter") {
             reactionSummary = `Gegenzauber (${reactionAttribute})`;
           } else {
             reactionSummary = `Wurf ${reactionAttribute} → ${reactionFormula}`;
           }
+          if (reactionRolled) reactionSummary = `${reactionSummary} · Wurf`;
         }
 
         return {

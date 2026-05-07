@@ -51,6 +51,19 @@ export class LoAItemSheet extends ItemSheet {
     if (!root) return;
 
     const item = this.item;
+    const effectSelect = root.querySelector(
+      "[data-loa-effect-kind]",
+    ) as HTMLSelectElement | null;
+    effectSelect?.addEventListener("change", async (event: Event) => {
+      const value = (event.target as HTMLSelectElement).value;
+      if (!LoAItemSheet.isReactionEffect(value)) return;
+      const costSelect = root.querySelector(
+        "[data-loa-action-cost]",
+      ) as HTMLSelectElement | null;
+      if (costSelect) costSelect.value = "reaction";
+      await item.update({ "system.actionCost": "reaction" });
+    });
+
     const buttons = root.querySelectorAll(
       "[data-action='cast-spell']",
     ) as NodeListOf<HTMLElement>;
@@ -60,5 +73,9 @@ export class LoAItemSheet extends ItemSheet {
         void item.castSpell();
       });
     });
+  }
+
+  private static isReactionEffect(value: string | null | undefined): boolean {
+    return value === "reaction" || String(value ?? "").startsWith("reaction_");
   }
 }

@@ -55,7 +55,6 @@ export class SpellCastService {
   ): Promise<void> {
     const speaker = ChatMessage.getSpeaker({ actor });
     const kind = (spell.system.effectKind ?? "damage") as EffectKind;
-    const dc = options.dc ?? null;
 
     const generates = !spell.system.isCantrip && Boolean(spell.system.generatesResonance);
     const cost = generates ? Number(spell.system.resonanceCost ?? 0) : 0;
@@ -70,7 +69,7 @@ export class SpellCastService {
 
     const attacks =
       kind === "damage"
-        ? await SpellCastService.rollAttacks(actor, spell, resonanceCheck, speaker, dc)
+        ? await SpellCastService.rollAttacks(actor, spell, resonanceCheck, speaker)
         : [];
 
     const heal =
@@ -99,7 +98,6 @@ export class SpellCastService {
     spell: SpellLike,
     resonance: ResonanceCheckResult,
     speaker: unknown,
-    dc: number | null,
   ): Promise<AttackResult[]> {
     if (!spell.system.damage) return [];
 
@@ -158,7 +156,8 @@ export class SpellCastService {
             damage: damageTotal,
             damageType,
             source: spellName,
-            dc,
+            sourceItemType: "spell",
+            dc: 8 + attrMod,
           });
         } catch (error) {
           Logger.warn("SpellCastService: pending damage failed", error);

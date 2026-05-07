@@ -181,6 +181,14 @@ export class ChatCardRenderer {
         return "Utility";
       case "reaction":
         return "Reaktion";
+      case "reaction_reduce_damage":
+        return "Reaktion: Schadensreduktion";
+      case "reaction_counter":
+        return "Reaktion: Counter";
+      case "reaction_dodge":
+        return "Reaktion: Dodge";
+      case "reaction_custom":
+        return "Reaktion: Custom";
     }
   }
 
