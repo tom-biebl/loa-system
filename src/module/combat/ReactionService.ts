@@ -177,7 +177,7 @@ export class ReactionService {
       return;
     }
 
-    const ok = await ActionEconomyService.spend(target, "reactions", 1);
+    const ok = await ActionEconomyService.spendForCost(target, "reaction");
     if (!ok) {
       ui.notifications?.warn("Keine Reaktion mehr in dieser Runde übrig.");
       return;

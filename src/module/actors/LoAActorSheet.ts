@@ -5,6 +5,7 @@ import { ActorDataBuilder } from "./ActorDataBuilder.js";
 import { InventoryService } from "../inventory/InventoryService.js";
 import { ClassManager } from "../classes/ClassManager.js";
 import { ExperienceService } from "../experience/ExperienceService.js";
+import { ActionEconomyService } from "../combat/ActionEconomy.js";
 import { Logger } from "../utils/Logger.js";
 import type { LoAActor } from "./LoAActor.js";
 
@@ -63,6 +64,18 @@ export class LoAActorSheet extends ActorSheet {
     this.bindClassChange(root);
     this.bindExperience(root);
     this.bindSpecialAmmo(root);
+    this.bindActionEconomyReset(root);
+  }
+
+  private bindActionEconomyReset(root: HTMLElement): void {
+    root
+      .querySelectorAll<HTMLElement>("[data-loa-action='reset-action-economy']")
+      .forEach((btn) => {
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          await ActionEconomyService.resetAll(this.actor);
+        });
+      });
   }
 
   /** Beim Klassenwechsel ggf. ungültige Subklasse zurücksetzen. */

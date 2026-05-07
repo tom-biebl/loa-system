@@ -68,10 +68,20 @@ export class ActionEconomyService {
   /** True, wenn der Actor in einem laufenden Combat steht. */
   static isInActiveCombat(actor: ActionEconomyActor): boolean {
     if (typeof game === "undefined") return false;
-    const combats = game.combats?.combats ?? game.combats ?? [];
+    const collection = game.combats;
+    if (!collection) return false;
+    const combats: any[] = Array.isArray(collection)
+      ? collection
+      : Array.isArray(collection.contents)
+      ? collection.contents
+      : Array.from(collection as Iterable<any>);
     for (const combat of combats) {
       if (!combat?.started) continue;
-      const combatants = combat.combatants?.contents ?? [];
+      const combatantsRaw = combat.combatants;
+      if (!combatantsRaw) continue;
+      const combatants: any[] = Array.isArray(combatantsRaw.contents)
+        ? combatantsRaw.contents
+        : Array.from(combatantsRaw as Iterable<any>);
       for (const combatant of combatants) {
         if (combatant?.actor?.id === actor.id) return true;
       }

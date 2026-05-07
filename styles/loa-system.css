@@ -300,6 +300,22 @@
   color: var(--loa-parchment-soft);
 }
 
+.loa-icon-btn {
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: linear-gradient(180deg, var(--loa-gold-light), var(--loa-gold));
+  border: 1px solid var(--loa-leather-dark);
+  color: var(--loa-ink);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.loa-icon-btn:hover {
+  filter: brightness(1.08);
+}
+
 /* -------------------- Attribute ----------------------------- */
 
 .loa-attributes {
