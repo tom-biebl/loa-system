@@ -15,9 +15,12 @@ import { Logger } from "../utils/Logger.js";
 export function registerCombatHooks(): void {
   Hooks.on("combatStart", onCombatStart);
   Hooks.on("combatTurn", onCombatTurn);
+  Hooks.on("updateCombat", onUpdateCombat);
   Hooks.on("deleteCombat", onDeleteCombat);
   Hooks.on("controlToken", onControlToken);
 }
+
+const LAST_RESET_KEYS = new Map<string, string>();
 
 async function onCombatStart(combat: Combat): Promise<void> {
   Logger.debug("Combat started", { round: combat.round });
@@ -31,7 +34,17 @@ async function onCombatTurn(combat: Combat): Promise<void> {
   QuickActionMenu.rebind(QuickActionMenu.resolveActor());
 }
 
-function onDeleteCombat(): void {
+async function onUpdateCombat(
+  combat: Combat,
+  changed: Record<string, unknown>,
+): Promise<void> {
+  if (!hasTurnChange(changed)) return;
+  await resetActiveCombatant(combat);
+  QuickActionMenu.rebind(QuickActionMenu.resolveActor());
+}
+
+function onDeleteCombat(combat: Combat): void {
+  LAST_RESET_KEYS.delete(combatKey(combat));
   QuickActionMenu.closeIfOpen();
 }
 
@@ -47,5 +60,18 @@ async function resetActiveCombatant(combat: Combat): Promise<void> {
   const combatant = combat.combatants.get(id);
   const actor = combatant?.actor;
   if (!actor) return;
+  const key = combatKey(combat);
+  const resetKey = `${combat.round}:${combat.turn}:${id}`;
+  if (LAST_RESET_KEYS.get(key) === resetKey) return;
+  LAST_RESET_KEYS.set(key, resetKey);
   await ActionEconomyService.resetActionsForTurn(actor);
+}
+
+function hasTurnChange(changed: Record<string, unknown>): boolean {
+  return "round" in changed || "turn" in changed || "current" in changed;
+}
+
+function combatKey(combat: Combat): string {
+  const data = combat as Combat & { id?: string | null; uuid?: string | null };
+  return data.id ?? data.uuid ?? "active-combat";
 }
