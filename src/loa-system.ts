@@ -3,6 +3,7 @@ import { Logger } from "./module/utils/Logger.js";
 
 import { AttributeService } from "./module/attributes/AttributeService.js";
 import { PointBuyService } from "./module/attributes/PointBuyService.js";
+import { RestService } from "./module/actors/RestService.js";
 import { ResourceManager } from "./module/resources/ResourceManager.js";
 import { ResonanceManager } from "./module/magic/ResonanceManager.js";
 import { StabilityCheckService } from "./module/magic/StabilityCheckService.js";
@@ -35,6 +36,7 @@ registerHooks();
 (globalThis as { loaSystem?: unknown }).loaSystem = {
   AttributeService,
   PointBuyService,
+  RestService,
   ResourceManager,
   ResonanceManager,
   StabilityCheckService,

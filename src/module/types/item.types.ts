@@ -108,6 +108,7 @@ export interface AbilitySystemData
 export interface ConsumableSystemData extends BaseItemData {
   uses: { value: number; max: number };
   effect: string;
+  healFormula: string;
   /** Stack-Größe im Inventar. Max via `InventoryService.CONSUMABLE_MAX_STACK`. */
   quantity: number;
 }

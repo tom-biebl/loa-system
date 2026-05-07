@@ -6,6 +6,7 @@ import { InventoryService } from "../inventory/InventoryService.js";
 import { ClassManager } from "../classes/ClassManager.js";
 import { ExperienceService } from "../experience/ExperienceService.js";
 import { ActionEconomyService } from "../combat/ActionEconomy.js";
+import { RestService } from "./RestService.js";
 import { Logger } from "../utils/Logger.js";
 import type { LoAActor } from "./LoAActor.js";
 
@@ -65,6 +66,27 @@ export class LoAActorSheet extends ActorSheet {
     this.bindExperience(root);
     this.bindSpecialAmmo(root);
     this.bindActionEconomy(root);
+    this.bindRestActions(root);
+  }
+
+  private bindRestActions(root: HTMLElement): void {
+    root
+      .querySelectorAll<HTMLElement>("[data-loa-action='short-rest']")
+      .forEach((btn) => {
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          await RestService.shortRest(this.actor);
+        });
+      });
+
+    root
+      .querySelectorAll<HTMLElement>("[data-loa-action='long-rest']")
+      .forEach((btn) => {
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          await RestService.longRest(this.actor);
+        });
+      });
   }
 
   private bindActionEconomy(root: HTMLElement): void {

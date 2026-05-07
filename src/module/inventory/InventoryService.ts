@@ -1,5 +1,7 @@
 import { Logger } from "../utils/Logger.js";
 import { ChatCardRenderer } from "../chat/ChatCardRenderer.js";
+import { DamageService } from "../combat/DamageService.js";
+import { RollManager } from "../rolls/RollManager.js";
 
 interface InventoryActorLike {
   id?: string | null;
@@ -124,8 +126,26 @@ export class InventoryService {
   ): Promise<void> {
     if (item.type !== "consumable") return;
     const sys = item.system as
-      | { quantity?: number; effect?: string; description?: string }
+      | { quantity?: number; effect?: string; description?: string; healFormula?: string }
       | undefined;
+    const healFormula = String(sys?.healFormula ?? "").trim();
+    if (healFormula) {
+      try {
+        const roll = await RollManager.roll({
+          formula: healFormula,
+          flavor: `${item.name ?? "Consumable"} · Heilung`,
+          speaker: ChatMessage.getSpeaker({ actor }),
+        });
+        await DamageService.heal(actor as any, Number(roll.total ?? 0));
+      } catch (error) {
+        Logger.warn("Consumable healing formula failed", { item: item.name, healFormula, error });
+        ui.notifications?.warn("Heilungs-Formel konnte nicht gewürfelt werden.");
+        return;
+      }
+      await InventoryService.decrementConsumable(item, Number(sys?.quantity ?? 1));
+      return;
+    }
+
     const description =
       sys?.effect?.trim() ||
       sys?.description?.trim() ||
@@ -138,6 +158,13 @@ export class InventoryService {
       description,
     });
     const qty = Number(sys?.quantity ?? 1);
+    await InventoryService.decrementConsumable(item, qty);
+  }
+
+  private static async decrementConsumable(
+    item: { delete(): Promise<unknown>; update(diff: Record<string, unknown>): Promise<unknown> },
+    qty: number,
+  ): Promise<void> {
     if (qty <= 1) {
       await item.delete();
     } else {

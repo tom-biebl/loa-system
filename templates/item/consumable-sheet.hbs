@@ -19,6 +19,16 @@
 
     <p class="loa-muted loa-mini">Stack-Limit: 10 pro Slot. Beim Verwenden wird die Anzahl um 1 reduziert; bei 0 wird das Item entfernt.</p>
 
+    <fieldset class="loa-effect-fields">
+      <legend>Heilung</legend>
+      <div class="loa-field-grid">
+        <label>Heilungs-Formel
+          <input name="system.healFormula" type="text" value="{{system.healFormula}}" placeholder="2d4 + 2" />
+        </label>
+      </div>
+      <p class="loa-muted loa-mini">Wenn eine Formel eingetragen ist, würfelt das Consumable beim Verwenden und heilt den Actor.</p>
+    </fieldset>
+
     <label>Effekt</label>
     <textarea name="system.effect">{{system.effect}}</textarea>
 

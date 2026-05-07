@@ -367,6 +367,15 @@
   filter: brightness(1.08);
 }
 
+.loa-rest-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.loa-rest-actions .loa-action-btn {
+  width: 100%;
+}
+
 .loa-chat-action {
   border-left: 3px solid var(--loa-gold);
   padding-left: 8px;
