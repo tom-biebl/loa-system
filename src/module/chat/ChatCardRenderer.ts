@@ -56,6 +56,16 @@ interface UtilityChatPayload {
   description: string;
 }
 
+interface ActionSpendChatPayload {
+  speaker?: unknown;
+  actorName: string;
+  actionLabel: string;
+  pluralLabel: string;
+  description?: string;
+  current: number;
+  max: number;
+}
+
 interface PendingDamageFlagsLike {
   attackerName: string;
   targetName: string;
@@ -130,6 +140,20 @@ export class ChatCardRenderer {
       speaker: payload.speaker,
       flavor: SYSTEM_LABEL,
       content: `<div class="loa-chat-card">${lines.join("")}</div>`,
+    });
+  }
+
+  static async renderActionSpend(payload: ActionSpendChatPayload): Promise<unknown> {
+    const detail = payload.description ? `: <em>${payload.description}</em>` : "";
+    const html =
+      `<div class="loa-chat-card loa-chat-action">` +
+      `<header class="loa-chat-header"><strong>${payload.actorName}</strong> verwendet eine ${payload.actionLabel}${detail}.</header>` +
+      `<p>Verbleibende ${payload.pluralLabel}: <strong>${payload.current}</strong> / ${payload.max}</p>` +
+      `</div>`;
+    return ChatMessage.create({
+      speaker: payload.speaker,
+      flavor: SYSTEM_LABEL,
+      content: html,
     });
   }
 

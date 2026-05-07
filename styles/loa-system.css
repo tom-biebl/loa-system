@@ -316,6 +316,62 @@
   filter: brightness(1.08);
 }
 
+/* -------------------- Aktionsökonomie ----------------------- */
+
+.loa-action-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.loa-action-row {
+  display: grid;
+  grid-template-columns: 1fr 56px auto 56px auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255, 250, 230, 0.5);
+  border: 1px solid var(--loa-leather);
+}
+
+.loa-action-label {
+  font-weight: 600;
+  color: var(--loa-leather-dark);
+}
+
+.loa-action-current,
+.loa-action-max {
+  text-align: center;
+  font-weight: 700;
+}
+
+.loa-action-divider {
+  color: var(--loa-leather);
+  font-weight: 700;
+}
+
+.loa-action-spend {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--loa-leather-dark);
+  background: linear-gradient(180deg, var(--loa-gold-light), var(--loa-gold));
+  color: var(--loa-ink);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.loa-action-spend:hover {
+  filter: brightness(1.08);
+}
+
+.loa-chat-action {
+  border-left: 3px solid var(--loa-gold);
+  padding-left: 8px;
+}
+
 /* -------------------- Attribute ----------------------------- */
 
 .loa-attributes {

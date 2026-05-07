@@ -33,10 +33,29 @@ export interface PotionInventory {
   items: unknown[];
 }
 
+/**
+ * @deprecated Alte Aktionsökonomie. Wird durch `combat.actions` ersetzt.
+ * Bleibt nur für Backward-Reads, wird beim Spend nicht mehr beschrieben.
+ */
 export interface ActionEconomyData {
   actions: LoAResource;
   bonusActions: LoAResource;
   reactions: LoAResource;
+}
+
+export interface ActionResource {
+  current: number;
+  max: number;
+}
+
+export interface CombatActionsData {
+  action: ActionResource;
+  bonusAction: ActionResource;
+  reaction: ActionResource;
+}
+
+export interface CombatData {
+  actions: CombatActionsData;
 }
 
 export interface SpellcastingData {
@@ -84,7 +103,9 @@ export interface LoAActorSystemData {
   attributes: Record<AttributeKey, LoAAttribute>;
   resources: LoAResources;
   classResources: LoAClassResources;
-  actionEconomy: ActionEconomyData;
+  combat: CombatData;
+  /** @deprecated — Daten bleiben evtl. auf alten Actors, werden aber nicht mehr genutzt. */
+  actionEconomy?: ActionEconomyData;
   spellcasting: SpellcastingData;
   pointBuy: PointBuyData;
   ac: ArmorClassData;

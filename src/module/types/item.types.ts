@@ -1,6 +1,6 @@
 import type { AttributeKey } from "../constants/system.constants.js";
 
-export type ActionCost = "action" | "bonus" | "reaction" | "free";
+export type ActionCost = "action" | "bonusAction" | "reaction" | "freeAction";
 
 /**
  * Welche Art von Wirkung das Item beim Auslösen hat.
@@ -30,6 +30,10 @@ interface ReactionFields {
   reactionMode: ReactionMode;
   reactionFormula: string;
   reactionAttribute: AttributeKey;
+  /** Trigger, der diese Reaktion anbietet. Architektur-Feld, derzeit Default `before_damage_applied`. */
+  reactionTrigger: string;
+  /** Optional: Reaktions-Art (dodge / counter / reduce_damage / ...). */
+  reactionTypeKey: string;
 }
 
 interface DefendableFields {

@@ -11,7 +11,8 @@ import { SpellCastService } from "../magic/SpellCastService.js";
 import { AttackService } from "../combat/AttackService.js";
 import { AbilityUseService } from "../abilities/AbilityUseService.js";
 import { ReactionService } from "../combat/ReactionService.js";
-import { ACTION_COST_LABELS, ActionEconomyService } from "../combat/ActionEconomy.js";
+import { ActionEconomyService } from "../combat/ActionEconomy.js";
+import { normalizeActionType } from "../constants/action.constants.js";
 import type { LoAActor } from "../actors/LoAActor.js";
 
 /**
@@ -121,13 +122,9 @@ export class LoAItem extends Item {
   }
 
   private async consumeActionCost(actor: LoAActor): Promise<boolean> {
-    const cost = this.getActionCost();
-    const ok = await ActionEconomyService.spendForCost(actor, cost);
-    if (!ok) {
-      ui.notifications?.warn(
-        `Keine ${ACTION_COST_LABELS[cost]} mehr in dieser Runde übrig.`,
-      );
-    }
-    return ok;
+    const normalized = normalizeActionType(this.getActionCost());
+    return ActionEconomyService.spendAction(actor, normalized, {
+      description: this.name ?? undefined,
+    });
   }
 }

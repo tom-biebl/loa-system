@@ -16,6 +16,7 @@ import { InitiativeService } from "./module/combat/InitiativeService.js";
 import { AttackService } from "./module/combat/AttackService.js";
 import { TargetService } from "./module/combat/TargetService.js";
 import { ReactionService } from "./module/combat/ReactionService.js";
+import { ReactionOfferService } from "./module/combat/ReactionOfferService.js";
 import { AbilityUseService } from "./module/abilities/AbilityUseService.js";
 import { ClassManager } from "./module/classes/ClassManager.js";
 import { ExperienceService } from "./module/experience/ExperienceService.js";
@@ -46,6 +47,7 @@ registerHooks();
   AttackService,
   TargetService,
   ReactionService,
+  ReactionOfferService,
   AbilityUseService,
   ClassManager,
   ExperienceService,

@@ -2,41 +2,31 @@ import { ActionEconomyService } from "../combat/ActionEconomy.js";
 import { Logger } from "../utils/Logger.js";
 
 /**
- * Combat-Tracker Integration: setzt Aktionen / Bonusaktionen zu Beginn jedes
- * Zugs zurück und Reaktionen am Beginn jeder Runde. Engine-Logik liegt im
- * ActionEconomyService — die Hooks orchestrieren nur.
+ * Combat-Tracker-Integration.
+ *
+ * Spec: „Am Anfang des EIGENEN Turns werden die Aktionsressourcen des Actors
+ * zurückgesetzt." → Reset NUR per `combatTurn` (und `combatStart` für den
+ * ersten aktiven Combatant), nicht pauschal pro Runde.
  */
 export function registerCombatHooks(): void {
-  Hooks.on("combatTurn", onCombatTurn);
-  Hooks.on("combatRound", onCombatRound);
   Hooks.on("combatStart", onCombatStart);
+  Hooks.on("combatTurn", onCombatTurn);
 }
 
 async function onCombatStart(combat: Combat): Promise<void> {
   Logger.debug("Combat started", { round: combat.round });
-  await resetReactionsForAll(combat);
+  await resetActiveCombatant(combat);
 }
 
 async function onCombatTurn(combat: Combat): Promise<void> {
+  await resetActiveCombatant(combat);
+}
+
+async function resetActiveCombatant(combat: Combat): Promise<void> {
   const id = combat.current?.combatantId;
   if (!id) return;
   const combatant = combat.combatants.get(id);
   const actor = combatant?.actor;
   if (!actor) return;
-  await ActionEconomyService.resetAll(actor);
-}
-
-async function onCombatRound(combat: Combat): Promise<void> {
-  await resetReactionsForAll(combat);
-}
-
-async function resetReactionsForAll(combat: Combat): Promise<void> {
-  const list = combat.combatants?.contents ?? [];
-  for (const combatant of list) {
-    const actor = combatant.actor;
-    if (!actor?.system?.actionEconomy?.reactions) continue;
-    await actor.update({
-      "system.actionEconomy.reactions.value": actor.system.actionEconomy.reactions.max,
-    });
-  }
+  await ActionEconomyService.resetActionsForTurn(actor);
 }

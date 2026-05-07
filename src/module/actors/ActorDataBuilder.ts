@@ -21,6 +21,10 @@ import {
   type SubclassDefinition,
 } from "../constants/class.constants.js";
 import { ExperienceService, type ExperienceComputed } from "../experience/ExperienceService.js";
+import {
+  ACTION_TYPE_LABELS,
+  ACTION_TYPE_LABELS_PLURAL,
+} from "../constants/action.constants.js";
 
 interface AttributeViewModel {
   key: AttributeKey;
@@ -70,6 +74,22 @@ interface ArmorVM extends InventoryItemVM {
   acBonus: number;
   armorType: string;
   equipped: boolean;
+}
+
+interface ActionRowVM {
+  type: "action" | "bonusAction" | "reaction";
+  label: string;
+  pluralLabel: string;
+  current: number;
+  max: number;
+}
+
+interface CombatActionsViewModel {
+  rows: ActionRowVM[];
+  /** Convenience-Aliasse für bestehende Templates. */
+  actions: { value: number; max: number };
+  bonusActions: { value: number; max: number };
+  reactions: { value: number; max: number };
 }
 
 interface AbilityVM extends InventoryItemVM {
@@ -138,11 +158,7 @@ export interface ActorSheetViewModel {
   pointBuy: { spent: number; remaining: number; total: number };
   resonance: ReturnType<typeof ResonanceManager.evaluate>;
   ac: { bonus: number; value: number; dex: number; armor: number };
-  actionEconomy: {
-    actions: { value: number; max: number };
-    bonusActions: { value: number; max: number };
-    reactions: { value: number; max: number };
-  };
+  combat: CombatActionsViewModel;
   inventory: {
     capacity: number;
     used: number;
@@ -236,11 +252,7 @@ export class ActorDataBuilder {
         dex: system.attributes?.dex?.modifier ?? 0,
         armor: ActorDataBuilder.sumEquippedArmor(allItems),
       },
-      actionEconomy: {
-        actions: system.actionEconomy?.actions ?? { value: 1, max: 1 },
-        bonusActions: system.actionEconomy?.bonusActions ?? { value: 1, max: 1 },
-        reactions: system.actionEconomy?.reactions ?? { value: 1, max: 1 },
-      },
+      combat: ActorDataBuilder.buildCombatActions(system),
       inventory,
       equippedArmor,
       spellbook,
@@ -249,6 +261,48 @@ export class ActorDataBuilder {
       class: classView,
       classResources,
       experience,
+    };
+  }
+
+  // ----------------- Combat / Action Economy -----------------
+
+  private static buildCombatActions(system: LoAActorSystemData): CombatActionsViewModel {
+    const data = system.combat?.actions;
+    const fallback = { current: 0, max: 0 };
+    const action = data?.action ?? { current: 1, max: 1 };
+    const bonusAction = data?.bonusAction ?? { current: 1, max: 1 };
+    const reaction = data?.reaction ?? { current: 1, max: 1 };
+
+    const rows: ActionRowVM[] = [
+      {
+        type: "action",
+        label: ACTION_TYPE_LABELS.action,
+        pluralLabel: ACTION_TYPE_LABELS_PLURAL.action,
+        current: Number(action.current ?? 0),
+        max: Number(action.max ?? 0),
+      },
+      {
+        type: "bonusAction",
+        label: ACTION_TYPE_LABELS.bonusAction,
+        pluralLabel: ACTION_TYPE_LABELS_PLURAL.bonusAction,
+        current: Number(bonusAction.current ?? 0),
+        max: Number(bonusAction.max ?? 0),
+      },
+      {
+        type: "reaction",
+        label: ACTION_TYPE_LABELS.reaction,
+        pluralLabel: ACTION_TYPE_LABELS_PLURAL.reaction,
+        current: Number(reaction.current ?? 0),
+        max: Number(reaction.max ?? 0),
+      },
+    ];
+
+    void fallback;
+    return {
+      rows,
+      actions: { value: rows[0]!.current, max: rows[0]!.max },
+      bonusActions: { value: rows[1]!.current, max: rows[1]!.max },
+      reactions: { value: rows[2]!.current, max: rows[2]!.max },
     };
   }
 

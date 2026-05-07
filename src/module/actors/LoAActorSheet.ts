@@ -64,16 +64,67 @@ export class LoAActorSheet extends ActorSheet {
     this.bindClassChange(root);
     this.bindExperience(root);
     this.bindSpecialAmmo(root);
-    this.bindActionEconomyReset(root);
+    this.bindActionEconomy(root);
   }
 
-  private bindActionEconomyReset(root: HTMLElement): void {
+  private bindActionEconomy(root: HTMLElement): void {
+    // Reset-Button
     root
       .querySelectorAll<HTMLElement>("[data-loa-action='reset-action-economy']")
       .forEach((btn) => {
         btn.addEventListener("click", async (event) => {
           event.preventDefault();
-          await ActionEconomyService.resetAll(this.actor);
+          await ActionEconomyService.resetActionsForTurn(this.actor);
+        });
+      });
+
+    // Spend-Button (manueller Verbrauch via "−"-Knopf)
+    root
+      .querySelectorAll<HTMLElement>("[data-loa-action='spend-action']")
+      .forEach((btn) => {
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          const type = btn.dataset.actionType as
+            | "action"
+            | "bonusAction"
+            | "reaction"
+            | undefined;
+          if (!type) return;
+          await ActionEconomyService.spendAction(this.actor, type, {
+            description: "manuell",
+            enforce: true,
+          });
+        });
+      });
+
+    // Current/Max-Inputs
+    root
+      .querySelectorAll<HTMLInputElement>("[data-loa-action='set-action-current']")
+      .forEach((input) => {
+        input.addEventListener("change", async (event) => {
+          const target = event.target as HTMLInputElement;
+          const type = target.dataset.actionType as
+            | "action"
+            | "bonusAction"
+            | "reaction"
+            | undefined;
+          if (!type) return;
+          await ActionEconomyService.setCurrent(this.actor, type, Number(target.value));
+        });
+      });
+
+    root
+      .querySelectorAll<HTMLInputElement>("[data-loa-action='set-action-max']")
+      .forEach((input) => {
+        input.addEventListener("change", async (event) => {
+          const target = event.target as HTMLInputElement;
+          const type = target.dataset.actionType as
+            | "action"
+            | "bonusAction"
+            | "reaction"
+            | undefined;
+          if (!type) return;
+          await ActionEconomyService.setMax(this.actor, type, Number(target.value));
         });
       });
   }

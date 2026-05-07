@@ -20,10 +20,10 @@
       </label>
       <label>Aktionskosten
         <select name="system.actionCost">
-          <option value="action"   {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
-          <option value="bonus"    {{#if (eq system.actionCost 'bonus')}}selected{{/if}}>Bonusaktion</option>
-          <option value="reaction" {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
-          <option value="free"     {{#if (eq system.actionCost 'free')}}selected{{/if}}>Kostenlos</option>
+          <option value="action"      {{#if (eq system.actionCost 'action')}}selected{{/if}}>Aktion</option>
+          <option value="bonusAction" {{#if (eq system.actionCost 'bonusAction')}}selected{{/if}}>Bonusaktion</option>
+          <option value="reaction"    {{#if (eq system.actionCost 'reaction')}}selected{{/if}}>Reaktion</option>
+          <option value="freeAction"  {{#if (eq system.actionCost 'freeAction')}}selected{{/if}}>Freie Aktion</option>
         </select>
       </label>
       <label>Stufe

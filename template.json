@@ -35,10 +35,12 @@
         "inventory": {
           "capacity": 16
         },
-        "actionEconomy": {
-          "actions": { "value": 1, "max": 1 },
-          "bonusActions": { "value": 1, "max": 1 },
-          "reactions": { "value": 1, "max": 1 }
+        "combat": {
+          "actions": {
+            "action":      { "current": 1, "max": 1 },
+            "bonusAction": { "current": 1, "max": 1 },
+            "reaction":    { "current": 1, "max": 1 }
+          }
         },
         "spellcasting": {
           "ability": "int"
@@ -101,6 +103,8 @@
       "reactionMode": "flat",
       "reactionFormula": "0",
       "reactionAttribute": "int",
+      "reactionTrigger": "before_damage_applied",
+      "reactionTypeKey": "reduce_damage",
       "slots": 0
     },
     "ability": {
@@ -115,6 +119,8 @@
       "reactionMode": "flat",
       "reactionFormula": "0",
       "reactionAttribute": "str",
+      "reactionTrigger": "before_damage_applied",
+      "reactionTypeKey": "reduce_damage",
       "slots": 0
     },
     "consumable": {

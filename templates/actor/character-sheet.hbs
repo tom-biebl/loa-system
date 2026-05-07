@@ -80,13 +80,41 @@
 
           <div class="loa-card">
             <h2>
-              Action Economy
+              Aktionsökonomie
               <button type="button" class="loa-icon-btn" data-loa-action="reset-action-economy" title="Aktionen zurücksetzen">↻</button>
             </h2>
-            <div class="loa-pill-row">
-              <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
-              <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
-              <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+            <div class="loa-action-grid">
+              {{#each viewModel.combat.rows as |row|}}
+                <div class="loa-action-row" data-action-type="{{row.type}}">
+                  <span class="loa-action-label">{{row.label}}</span>
+                  <input
+                    class="loa-action-current"
+                    type="number"
+                    min="0"
+                    value="{{row.current}}"
+                    data-loa-action="set-action-current"
+                    data-action-type="{{row.type}}"
+                    title="Verbleibende {{row.pluralLabel}}"
+                  />
+                  <span class="loa-action-divider">/</span>
+                  <input
+                    class="loa-action-max"
+                    type="number"
+                    min="0"
+                    value="{{row.max}}"
+                    data-loa-action="set-action-max"
+                    data-action-type="{{row.type}}"
+                    title="Max {{row.pluralLabel}}"
+                  />
+                  <button
+                    type="button"
+                    class="loa-action-spend"
+                    data-loa-action="spend-action"
+                    data-action-type="{{row.type}}"
+                    title="{{row.label}} verbrauchen"
+                  >−</button>
+                </div>
+              {{/each}}
             </div>
           </div>
 
@@ -284,11 +312,13 @@
         </div>
 
         <div class="loa-card">
-          <h2>Action Economy</h2>
+          <h2>Aktionsökonomie
+            <button type="button" class="loa-icon-btn" data-loa-action="reset-action-economy" title="Aktionen zurücksetzen">↻</button>
+          </h2>
           <div class="loa-pill-row">
-            <span class="loa-pill">Aktion {{viewModel.actionEconomy.actions.value}}/{{viewModel.actionEconomy.actions.max}}</span>
-            <span class="loa-pill">Bonus {{viewModel.actionEconomy.bonusActions.value}}/{{viewModel.actionEconomy.bonusActions.max}}</span>
-            <span class="loa-pill">Reaktion {{viewModel.actionEconomy.reactions.value}}/{{viewModel.actionEconomy.reactions.max}}</span>
+            {{#each viewModel.combat.rows as |row|}}
+              <span class="loa-pill">{{row.label}} {{row.current}}/{{row.max}}</span>
+            {{/each}}
           </div>
         </div>
 
