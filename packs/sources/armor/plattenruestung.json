@@ -1,0 +1,18 @@
+{
+  "_id": "loaarmplattenrus",
+  "name": "Plattenrüstung",
+  "type": "armor",
+  "img": "icons/equipment/chest/breastplate-armored-steel.webp",
+  "system": {
+    "description": "Verstärkte Stahlplatten — schwer, aber massiver Schutz.",
+    "acBonus": 6,
+    "armorType": "heavy",
+    "equipped": false,
+    "slots": 6
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

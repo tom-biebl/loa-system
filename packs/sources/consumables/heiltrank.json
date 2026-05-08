@@ -1,0 +1,19 @@
+{
+  "_id": "loacnsheiltrank0",
+  "name": "Kleiner Heiltrank",
+  "type": "consumable",
+  "img": "icons/consumables/potions/potion-tube-corked-red.webp",
+  "system": {
+    "description": "Eine kleine Glasflasche mit roter, heilender Flüssigkeit.",
+    "uses": { "value": 1, "max": 1 },
+    "effect": "Heilt 2d4 + 2 HP beim Anwender.",
+    "healFormula": "2d4 + 2",
+    "quantity": 3,
+    "slots": 1
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

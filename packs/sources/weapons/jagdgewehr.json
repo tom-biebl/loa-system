@@ -1,0 +1,22 @@
+{
+  "_id": "loawpngewehrjagd",
+  "name": "Jagdgewehr",
+  "type": "weapon",
+  "img": "icons/weapons/guns/gun-blunderbuss-brown.webp",
+  "system": {
+    "description": "Pulverbasierte Schusswaffe — laut, durchschlagskräftig, langsam zu laden.",
+    "damage": "2d6",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "dex",
+    "range": "150 ft.",
+    "properties": "fern, zweihändig, laden, laut",
+    "actionCost": "action",
+    "slots": 3
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

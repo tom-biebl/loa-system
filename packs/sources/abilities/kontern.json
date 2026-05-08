@@ -1,0 +1,27 @@
+{
+  "_id": "loaablkonternab1",
+  "name": "Kontern",
+  "type": "ability",
+  "img": "icons/skills/melee/strike-sword-blood-red.webp",
+  "system": {
+    "description": "Pariert den Angriff und schlägt zurück. Bei erfolgreichem Wurf wird der Schaden negiert.",
+    "actionCost": "reaction",
+    "effectKind": "reaction",
+    "damage": "",
+    "damageType": "physical",
+    "healFormula": "",
+    "cooldown": "",
+    "reactionDC": 0,
+    "reactionMode": "counter",
+    "reactionFormula": "0",
+    "reactionAttribute": "dex",
+    "reactionTrigger": "after_attack_roll",
+    "reactionTypeKey": "counter",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

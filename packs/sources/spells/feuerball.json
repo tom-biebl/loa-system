@@ -1,0 +1,33 @@
+{
+  "_id": "loasplfeuerball0",
+  "name": "Feuerball",
+  "type": "spell",
+  "img": "icons/magic/fire/explosion-fireball-medium-orange.webp",
+  "system": {
+    "description": "Eine Kugel aus konzentrierter Flammenenergie explodiert beim Aufschlag und versengt alles im Umkreis.",
+    "resonanceCost": 4,
+    "generatesResonance": true,
+    "level": 3,
+    "effectKind": "damage",
+    "damage": "8d6",
+    "damageType": "fire",
+    "healFormula": "",
+    "range": "150 ft.",
+    "attribute": "int",
+    "attackBonus": 2,
+    "actionCost": "action",
+    "isCantrip": false,
+    "reactionDC": 14,
+    "reactionMode": "flat",
+    "reactionFormula": "0",
+    "reactionAttribute": "int",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "reduce_damage",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

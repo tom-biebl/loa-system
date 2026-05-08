@@ -1,0 +1,19 @@
+{
+  "_id": "loacnsgiftflasch",
+  "name": "Giftflasche",
+  "type": "consumable",
+  "img": "icons/consumables/potions/bottle-round-corked-fire-orange.webp",
+  "system": {
+    "description": "Konzentriertes Gift in einer kleinen Flasche — auf Klingen aufgetragen oder als Wurfflakon nutzbar.",
+    "uses": { "value": 1, "max": 1 },
+    "effect": "Verursacht 1d6 Giftschaden auf der nächsten Waffe.",
+    "healFormula": "",
+    "quantity": 2,
+    "slots": 1
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

@@ -1,0 +1,18 @@
+{
+  "_id": "loaarmlederrust0",
+  "name": "Lederrüstung",
+  "type": "armor",
+  "img": "icons/equipment/chest/breastplate-leather-brown.webp",
+  "system": {
+    "description": "Gegerbtes Leder, leicht und beweglich — bietet bescheidenen Schutz.",
+    "acBonus": 2,
+    "armorType": "light",
+    "equipped": false,
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

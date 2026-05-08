@@ -43,7 +43,8 @@ jobs:
             template.json \
             dist \
             templates \
-            styles
+            styles \
+            packs
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

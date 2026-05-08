@@ -1,0 +1,33 @@
+{
+  "_id": "loasplarkanehand",
+  "name": "Arkane Hand",
+  "type": "spell",
+  "img": "icons/magic/control/hand-magic-purple.webp",
+  "system": {
+    "description": "Eine geisterhafte Hand erscheint und greift, hebt oder stößt nach Wunsch des Wirkenden.",
+    "resonanceCost": 0,
+    "generatesResonance": false,
+    "level": 0,
+    "effectKind": "utility",
+    "damage": "",
+    "damageType": "arcane",
+    "healFormula": "",
+    "range": "30 ft.",
+    "attribute": "int",
+    "attackBonus": 0,
+    "actionCost": "bonusAction",
+    "isCantrip": true,
+    "reactionDC": 10,
+    "reactionMode": "flat",
+    "reactionFormula": "0",
+    "reactionAttribute": "int",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "reduce_damage",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

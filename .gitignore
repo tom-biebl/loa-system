@@ -4,3 +4,12 @@ dist/
 .DS_Store
 .claude/
 loa-system.zip
+
+# Compiled compendium packs (generated from packs/sources/<name>/*.json
+# via `npm run build:packs`). Source JSON ist gitversioniert, das LevelDB-
+# Output wird im Release-Workflow neu erzeugt.
+packs/weapons/
+packs/armor/
+packs/spells/
+packs/abilities/
+packs/consumables/

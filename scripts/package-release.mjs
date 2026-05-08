@@ -15,7 +15,7 @@ const out = resolve(root, "loa-system.zip");
 
 if (existsSync(out)) rmSync(out);
 
-const include = ["system.json", "template.json", "dist", "styles", "templates"];
+const include = ["system.json", "template.json", "dist", "styles", "templates", "packs"];
 
 if (platform() === "win32") {
   const args = include.map((p) => `'${p}'`).join(",");

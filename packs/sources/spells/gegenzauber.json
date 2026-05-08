@@ -1,0 +1,33 @@
+{
+  "_id": "loasplgegenzaube",
+  "name": "Gegenzauber",
+  "type": "spell",
+  "img": "icons/magic/control/silhouette-aura-energy-purple.webp",
+  "system": {
+    "description": "Reagiert auf einen feindlichen Zauber. Bei erfolgreichem Wurf gegen die Cast-DC wird der Schaden komplett negiert.",
+    "resonanceCost": 3,
+    "generatesResonance": true,
+    "level": 3,
+    "effectKind": "reaction",
+    "damage": "",
+    "damageType": "arcane",
+    "healFormula": "",
+    "range": "60 ft.",
+    "attribute": "int",
+    "attackBonus": 0,
+    "actionCost": "reaction",
+    "isCantrip": false,
+    "reactionDC": 10,
+    "reactionMode": "counter",
+    "reactionFormula": "0",
+    "reactionAttribute": "int",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "counter",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

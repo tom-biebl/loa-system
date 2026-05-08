@@ -1,0 +1,22 @@
+{
+  "_id": "loawpnkurzbogen0",
+  "name": "Kurzbogen",
+  "type": "weapon",
+  "img": "icons/weapons/bows/shortbow-recurve-yellow.webp",
+  "system": {
+    "description": "Kompakter Recurve-Bogen für mittlere Distanz.",
+    "damage": "1d6",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "dex",
+    "range": "80 ft.",
+    "properties": "fern, zweihändig",
+    "actionCost": "action",
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

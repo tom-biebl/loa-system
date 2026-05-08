@@ -1,0 +1,22 @@
+{
+  "_id": "loawpndolch00001",
+  "name": "Dolch",
+  "type": "weapon",
+  "img": "icons/weapons/daggers/dagger-curved-poison.webp",
+  "system": {
+    "description": "Leichte Klinge für schnelle Stiche aus der Nebenhand.",
+    "damage": "1d4",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "dex",
+    "range": "melee",
+    "properties": "leicht, finesse",
+    "actionCost": "bonusAction",
+    "slots": 1
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

@@ -1,0 +1,18 @@
+{
+  "_id": "loaarmkettenrust",
+  "name": "Kettenrüstung",
+  "type": "armor",
+  "img": "icons/equipment/chest/breastplate-banded-steel.webp",
+  "system": {
+    "description": "Verzahnte Eisenringe — mittlerer Schutz und Gewicht.",
+    "acBonus": 4,
+    "armorType": "medium",
+    "equipped": false,
+    "slots": 4
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

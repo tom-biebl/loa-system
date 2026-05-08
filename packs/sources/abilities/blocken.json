@@ -1,0 +1,27 @@
+{
+  "_id": "loaablblockenab1",
+  "name": "Blocken",
+  "type": "ability",
+  "img": "icons/equipment/shield/heater-steel-worn.webp",
+  "system": {
+    "description": "Wirft Schild oder Waffe vor und reduziert eingehenden Schaden um einen festen Wert.",
+    "actionCost": "reaction",
+    "effectKind": "reaction",
+    "damage": "",
+    "damageType": "physical",
+    "healFormula": "",
+    "cooldown": "",
+    "reactionDC": 0,
+    "reactionMode": "flat",
+    "reactionFormula": "5",
+    "reactionAttribute": "str",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "reduce_damage",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

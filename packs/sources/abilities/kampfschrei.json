@@ -1,0 +1,27 @@
+{
+  "_id": "loaablkampfschre",
+  "name": "Kampfschrei",
+  "type": "ability",
+  "img": "icons/skills/social/intimidation-impressing.webp",
+  "system": {
+    "description": "Ein lauter Ruf, der Verbündete inspiriert und Gegner einschüchtert. Postet eine Chat-Nachricht.",
+    "actionCost": "bonusAction",
+    "effectKind": "utility",
+    "damage": "",
+    "damageType": "physical",
+    "healFormula": "",
+    "cooldown": "1 Encounter",
+    "reactionDC": 0,
+    "reactionMode": "flat",
+    "reactionFormula": "0",
+    "reactionAttribute": "cha",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "reduce_damage",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

@@ -65,13 +65,24 @@ export class QuickActionMenu extends Application {
   }
 
   static openFor(actor: any | null | undefined): void {
+    const menu = QuickActionMenu.getInstance();
+    menu.setActor(actor ?? null);
     if (!actor) {
-      Logger.debug("QuickActionMenu.openFor: no actor");
+      Logger.debug(
+        "QuickActionMenu.openFor: kein Actor aufgelöst — Menü öffnet im Leer-Zustand",
+      );
+    }
+    menu.render(true);
+  }
+
+  /** Toggles das Menü an/aus — gut für Hotkeys oder Macros. */
+  static toggle(): void {
+    const inst = QuickActionMenu.instance;
+    if (inst?.rendered) {
+      void inst.close();
       return;
     }
-    const menu = QuickActionMenu.getInstance();
-    menu.setActor(actor);
-    menu.render(true);
+    QuickActionMenu.openFor(QuickActionMenu.resolveActor());
   }
 
   static rebind(actor: any | null | undefined): void {
@@ -94,16 +105,40 @@ export class QuickActionMenu extends Application {
 
   /**
    * Bestimmt den Actor, dem das Menü gehört.
-   * Reihenfolge: kontrolliertes Token → assigned Character → aktiver Combatant.
+   * Reihenfolge:
+   *   1. kontrolliertes Token
+   *   2. assigned Character (`game.user.character`)
+   *   3. eigener Combatant im aktiven Kampf
+   *   4. erstes vom User besessenes Token in der aktuellen Szene
+   *   5. aktiver Combatant (Fallback für GM)
    */
   static resolveActor(): any | null {
     if (typeof game === "undefined") return null;
+    const user = game.user;
+
     const controlled = canvas?.tokens?.controlled ?? [];
     if (Array.isArray(controlled) && controlled.length > 0 && controlled[0]?.actor) {
       return controlled[0].actor;
     }
-    if (game.user?.character) return game.user.character;
+
+    if (user?.character) return user.character;
+
     const combat = game.combat;
+    if (combat?.combatants) {
+      const combatants: any[] =
+        combat.combatants.contents ?? Array.from(combat.combatants as Iterable<any>);
+      const ownCombatant = combatants.find((c) =>
+        c?.actor?.testUserPermission?.(user, "OWNER"),
+      );
+      if (ownCombatant?.actor) return ownCombatant.actor;
+    }
+
+    const tokens: any[] = canvas?.tokens?.placeables ?? [];
+    const ownToken = tokens.find((t) =>
+      t?.actor?.testUserPermission?.(user, "OWNER"),
+    );
+    if (ownToken?.actor) return ownToken.actor;
+
     if (combat?.combatant?.actor) return combat.combatant.actor;
     return null;
   }

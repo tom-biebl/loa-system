@@ -11,6 +11,7 @@ import { registerCombatHooks } from "./combatHooks.js";
 import { registerChatHooks } from "./chatHooks.js";
 import { GMBridgeService } from "../network/GMBridgeService.js";
 import { registerGMBridgeHandlers } from "../network/registerGMBridgeHandlers.js";
+import { QuickActionMenu } from "../ui/QuickActionMenu.js";
 
 /**
  * Zentrale Hook-Registrierung. Andere Module sollen NICHT direkt
@@ -30,6 +31,7 @@ function onInit(): void {
   CONFIG.Item.documentClass = LoAItem;
 
   InitiativeService.configure();
+  registerQuickMenuKeybinding();
 
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet(SYSTEM_ID, LoAActorSheet, {
@@ -53,4 +55,23 @@ async function onReady(): Promise<void> {
   registerGMBridgeHandlers();
   GMBridgeService.register();
   await WildMagicTableInstaller.ensure();
+}
+
+/**
+ * Registriert die Standard-Tastenbelegung zum Toggeln des Quick-Action-Menus.
+ * Default: Ctrl+Q. Spieler dürfen das Keybinding nutzen (`restricted: false`).
+ */
+function registerQuickMenuKeybinding(): void {
+  if (typeof game === "undefined") return;
+  if (typeof game.keybindings?.register !== "function") return;
+  game.keybindings.register(SYSTEM_ID, "toggle-quick-menu", {
+    name: "Quick-Action-Menü umschalten",
+    hint: "Öffnet bzw. schließt das Quick-Action-Menü für den aktuell kontrollierten Actor.",
+    editable: [{ key: "KeyQ", modifiers: ["Control"] }],
+    onDown: () => {
+      QuickActionMenu.toggle();
+      return true;
+    },
+    restricted: false,
+  });
 }

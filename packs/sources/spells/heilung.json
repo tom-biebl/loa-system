@@ -1,0 +1,33 @@
+{
+  "_id": "loasplheilung001",
+  "name": "Heilung",
+  "type": "spell",
+  "img": "icons/magic/holy/yin-yang-balance-blue.webp",
+  "system": {
+    "description": "Ein leuchtender Strahl positiver Energie schließt Wunden des anvisierten Ziels.",
+    "resonanceCost": 3,
+    "generatesResonance": true,
+    "level": 1,
+    "effectKind": "heal",
+    "damage": "",
+    "damageType": "arcane",
+    "healFormula": "2d8 + 4",
+    "range": "30 ft.",
+    "attribute": "wis",
+    "attackBonus": 0,
+    "actionCost": "action",
+    "isCantrip": false,
+    "reactionDC": 10,
+    "reactionMode": "flat",
+    "reactionFormula": "0",
+    "reactionAttribute": "wis",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "reduce_damage",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

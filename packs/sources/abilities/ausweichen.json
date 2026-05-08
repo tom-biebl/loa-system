@@ -1,0 +1,27 @@
+{
+  "_id": "loaablausweichen",
+  "name": "Ausweichen",
+  "type": "ability",
+  "img": "icons/skills/movement/figure-running-gray.webp",
+  "system": {
+    "description": "Schnelle Ausweichbewegung — bei erfolgreichem Wurf gegen die Angriffs-DC negiert der Treffer komplett.",
+    "actionCost": "reaction",
+    "effectKind": "reaction",
+    "damage": "",
+    "damageType": "physical",
+    "healFormula": "",
+    "cooldown": "",
+    "reactionDC": 0,
+    "reactionMode": "counter",
+    "reactionFormula": "0",
+    "reactionAttribute": "dex",
+    "reactionTrigger": "before_damage_applied",
+    "reactionTypeKey": "dodge",
+    "slots": 0
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}
