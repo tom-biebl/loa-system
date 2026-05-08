@@ -1,0 +1,22 @@
+{
+  "_id": "loawpnaxteasy001",
+  "name": "Einfache Axt",
+  "type": "weapon",
+  "img": "icons/weapons/axes/axe-battle-skull.webp",
+  "system": {
+    "description": "Robuste Holzfälleraxt, im Kampf einsetzbar.",
+    "damage": "1d10 + 1",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "str",
+    "range": "melee",
+    "properties": "schwer",
+    "actionCost": "action",
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

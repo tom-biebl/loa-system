@@ -40,6 +40,27 @@ export class EffectManager {
     return Boolean(found && !found.disabled);
   }
 
+  /**
+   * Wendet einen Foundry-Status-Effekt (z.B. "invisible", "stunned") auf den Actor an.
+   * Greift auf `actor.toggleStatusEffect` zurück, falls verfügbar.
+   */
+  static async applyStatus(actor: any, statusKey: string, active: boolean = true): Promise<void> {
+    if (!statusKey) return;
+    if (!actor) return;
+    if (typeof actor.toggleStatusEffect === "function") {
+      try {
+        await actor.toggleStatusEffect(statusKey, { active });
+        return;
+      } catch (error) {
+        Logger.warn("EffectManager.applyStatus: toggleStatusEffect fehlgeschlagen", {
+          statusKey,
+          error,
+        });
+      }
+    }
+    Logger.warn("EffectManager.applyStatus: kein Status-API verfügbar", { actorId: actor.id });
+  }
+
   /** Schaltet einen statusbasierten Effekt um. */
   static async toggle(
     actor: EffectCapableActor,

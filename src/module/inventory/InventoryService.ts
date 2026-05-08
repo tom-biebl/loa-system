@@ -1,6 +1,10 @@
 import { Logger } from "../utils/Logger.js";
 import { ChatCardRenderer } from "../chat/ChatCardRenderer.js";
 import { DamageService } from "../combat/DamageService.js";
+import { ReactionService } from "../combat/ReactionService.js";
+import { AoEService } from "../combat/AoEService.js";
+import { TargetService } from "../combat/TargetService.js";
+import { EffectManager } from "../effects/EffectManager.js";
 import { RollManager } from "../rolls/RollManager.js";
 
 interface InventoryActorLike {
@@ -117,48 +121,118 @@ export class InventoryService {
   }
 
   /**
-   * Verbraucht eines aus einem Consumable-Stack: dekrementiert quantity,
-   * löscht das Item bei 0 und postet eine Chat-Karte mit dem Effekt.
+   * Verbraucht eines aus einem Consumable-Stack:
+   *   1. AoE-Placement (falls aktiviert) → Targets gesetzt
+   *   2. Heilung (self) ODER Schaden auf alle Targets als Pending-Damage
+   *   3. Status-Effekt auf alle AoE-Targets (z.B. Rauchbombe → Invisible)
+   *   4. Chat-Karte + Quantity dekrementieren
+   *
+   * Bricht der User das AoE-Placement ab, wird NICHTS verbraucht.
    */
   static async consumeOne(
     actor: InventoryActorLike,
     item: InventoryItemLike & { delete(): Promise<unknown>; update(diff: Record<string, unknown>): Promise<unknown>; img?: string },
   ): Promise<void> {
     if (item.type !== "consumable") return;
-    const sys = item.system as
-      | { quantity?: number; effect?: string; description?: string; healFormula?: string }
-      | undefined;
+    const sys = item.system as Partial<{
+      quantity: number;
+      effect: string;
+      description: string;
+      healFormula: string;
+      damage: string;
+      damageType: string;
+      appliedStatus: string;
+      aoe: { enabled?: boolean };
+    }>;
+    const speaker = ChatMessage.getSpeaker({ actor });
     const healFormula = String(sys?.healFormula ?? "").trim();
-    if (healFormula) {
+    const damageFormula = String(sys?.damage ?? "").trim();
+    const damageType = String(sys?.damageType ?? "physical");
+    const appliedStatus = String(sys?.appliedStatus ?? "").trim();
+    const aoeEnabled = Boolean(sys?.aoe?.enabled);
+
+    // 1. AoE-Placement (falls aktiviert)
+    if (aoeEnabled) {
+      const result = await AoEService.placeAndCollect((sys as { aoe?: any })?.aoe);
+      if (!result) return; // Abbruch — kein Verbrauch
+    }
+
+    // 2a. Heilung (Self-Drink, ohne AoE)
+    if (healFormula && !aoeEnabled) {
       try {
         const roll = await RollManager.roll({
           formula: healFormula,
           flavor: `${item.name ?? "Consumable"} · Heilung`,
-          speaker: ChatMessage.getSpeaker({ actor }),
+          speaker,
         });
         await DamageService.heal(actor as any, Number(roll.total ?? 0));
       } catch (error) {
-        Logger.warn("Consumable healing formula failed", { item: item.name, healFormula, error });
+        Logger.warn("Consumable healing formula failed", {
+          item: item.name,
+          healFormula,
+          error,
+        });
         ui.notifications?.warn("Heilungs-Formel konnte nicht gewürfelt werden.");
         return;
       }
-      await InventoryService.decrementConsumable(item, Number(sys?.quantity ?? 1));
-      return;
     }
 
-    const description =
-      sys?.effect?.trim() ||
-      sys?.description?.trim() ||
-      `${item.name ?? "Consumable"} verwendet.`;
-    await ChatCardRenderer.renderUtility({
-      speaker: ChatMessage.getSpeaker({ actor }),
-      actorName: actor.name ?? "",
-      itemName: item.name ?? "Consumable",
-      itemImg: item.img,
-      description,
-    });
-    const qty = Number(sys?.quantity ?? 1);
-    await InventoryService.decrementConsumable(item, qty);
+    // 2b. Schaden auf AoE-Targets (oder ein gewähltes Single-Target)
+    if (damageFormula) {
+      const targets = TargetService.getActors();
+      try {
+        const damageRoll = await RollManager.roll({
+          formula: damageFormula,
+          flavor: `${item.name ?? "Consumable"} · Schaden (${damageType})`,
+          speaker,
+        });
+        const dmg = Number(damageRoll.total ?? 0);
+        if (targets.length === 0) {
+          Logger.debug("Consumable: Schadensformel ohne Targets — nur Anzeige.");
+        }
+        for (const target of targets) {
+          await ReactionService.createPending({
+            attackerName: actor.name ?? "Unbekannt",
+            targetActor: target,
+            damage: dmg,
+            damageType,
+            source: item.name ?? "Consumable",
+            dc: null,
+          });
+        }
+      } catch (error) {
+        Logger.warn("Consumable damage formula failed", {
+          item: item.name,
+          damageFormula,
+          error,
+        });
+      }
+    }
+
+    // 3. Status-Effekt auf alle AoE-Targets (z.B. Invisible)
+    if (appliedStatus && aoeEnabled) {
+      const targets = TargetService.getActors();
+      for (const target of targets) {
+        await EffectManager.applyStatus(target, appliedStatus, true);
+      }
+    }
+
+    // 4. Utility-Chat-Karte falls weder Heal noch Damage
+    if (!healFormula && !damageFormula) {
+      const description =
+        sys?.effect?.trim() ||
+        sys?.description?.trim() ||
+        `${item.name ?? "Consumable"} verwendet.`;
+      await ChatCardRenderer.renderUtility({
+        speaker,
+        actorName: actor.name ?? "",
+        itemName: item.name ?? "Consumable",
+        itemImg: item.img,
+        description,
+      });
+    }
+
+    await InventoryService.decrementConsumable(item, Number(sys?.quantity ?? 1));
   }
 
   private static async decrementConsumable(

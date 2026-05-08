@@ -1,0 +1,22 @@
+{
+  "_id": "loawpnstahlswrt0",
+  "name": "Einfaches Stahlschwert",
+  "type": "weapon",
+  "img": "icons/weapons/swords/sword-broad.webp",
+  "system": {
+    "description": "Geschmiedete Stahlklinge — die Standardwaffe vieler Stadtwachen.",
+    "damage": "1d8 + 2",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "str",
+    "range": "melee",
+    "properties": "",
+    "actionCost": "action",
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

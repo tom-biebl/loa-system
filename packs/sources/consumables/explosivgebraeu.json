@@ -1,0 +1,30 @@
+{
+  "_id": "loacnsexplosivg1",
+  "name": "Explosivgebräu",
+  "type": "consumable",
+  "img": "icons/svg/explosion.svg",
+  "system": {
+    "description": "Alchemistisches Gebräu in einer Tonkugel. Wirft man es bricht der Behälter und entzündet sich. Alle im Umkreis werden zurückgestoßen — Dex-Save vom GM gegen Knockback.",
+    "uses": { "value": 1, "max": 1 },
+    "effect": "AoE-Kreis 5 ft, Reichweite 30 ft. 3d6 Feuerschaden auf alle Targets. Targets werden 10 ft zurückgestoßen (Dex-Save gegen Knockback wird vom GM erzwungen).",
+    "healFormula": "",
+    "quantity": 2,
+    "usageType": "throwable",
+    "damage": "3d6",
+    "damageType": "fire",
+    "aoe": {
+      "enabled": true,
+      "shape": "circle",
+      "distance": 5,
+      "angle": 53,
+      "range": 30
+    },
+    "appliedStatus": "",
+    "slots": 1
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

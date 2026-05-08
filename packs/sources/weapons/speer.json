@@ -1,0 +1,22 @@
+{
+  "_id": "loawpnspeer00001",
+  "name": "Speer",
+  "type": "weapon",
+  "img": "icons/weapons/polearms/spear-simple-wood.webp",
+  "system": {
+    "description": "Hölzerner Speer mit eiserner Spitze — Reichweitenwaffe für den Nahkampf.",
+    "damage": "1d6 + 2",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "str",
+    "range": "melee",
+    "properties": "vielseitig, geworfen",
+    "actionCost": "action",
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

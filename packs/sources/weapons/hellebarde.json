@@ -1,0 +1,22 @@
+{
+  "_id": "loawpnhellebardd",
+  "name": "Hellebarde",
+  "type": "weapon",
+  "img": "icons/weapons/polearms/halberd-curved-engraved.webp",
+  "system": {
+    "description": "Lange Stangenwaffe mit Axtblatt und Spitze — verbindet Reichweite und Wucht.",
+    "damage": "1d10 + 3",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "str",
+    "range": "melee",
+    "properties": "schwer, zweihändig, reichweite",
+    "actionCost": "action",
+    "slots": 3
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

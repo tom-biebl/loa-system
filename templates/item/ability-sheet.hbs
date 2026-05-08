@@ -119,6 +119,36 @@
       </fieldset>
     {{/if}}
 
+    <fieldset class="loa-effect-fields loa-aoe-fields">
+      <legend>Flächen-Effekt (AoE)</legend>
+      <div class="loa-field-grid">
+        <label class="loa-checkbox">
+          <input name="system.aoe.enabled" type="checkbox" {{#if system.aoe.enabled}}checked{{/if}} />
+          AoE aktiv
+        </label>
+        <label>Form
+          <select name="system.aoe.shape">
+            <option value="none"   {{#if (eq system.aoe.shape 'none')}}selected{{/if}}>—</option>
+            <option value="circle" {{#if (eq system.aoe.shape 'circle')}}selected{{/if}}>Kreis (Radius)</option>
+            <option value="cone"   {{#if (eq system.aoe.shape 'cone')}}selected{{/if}}>Kegel</option>
+          </select>
+        </label>
+        <label>Distanz / Radius
+          <input name="system.aoe.distance" type="number" min="0" step="1" value="{{system.aoe.distance}}" />
+        </label>
+        <label>Winkel (Cone)
+          <input name="system.aoe.angle" type="number" min="0" step="1" value="{{system.aoe.angle}}" />
+        </label>
+        <label>Reichweite
+          <input name="system.aoe.range" type="number" min="0" step="1" value="{{system.aoe.range}}" />
+        </label>
+      </div>
+    </fieldset>
+
+    <label>Status-Effekt für AoE-Targets
+      <input name="system.appliedStatus" type="text" value="{{system.appliedStatus}}" placeholder="z.B. invisible, stunned, prone" />
+    </label>
+
     <label>Beschreibung</label>
     <textarea name="system.description">{{system.description}}</textarea>
   </section>

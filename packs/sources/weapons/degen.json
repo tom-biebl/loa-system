@@ -1,0 +1,22 @@
+{
+  "_id": "loawpndegen00001",
+  "name": "Degen",
+  "type": "weapon",
+  "img": "icons/weapons/swords/sword-rapier-tail.webp",
+  "system": {
+    "description": "Schmale, schnelle Stoßwaffe für präzise Treffer.",
+    "damage": "1d8 + 3",
+    "damageType": "physical",
+    "attackBonus": 0,
+    "attribute": "dex",
+    "range": "melee",
+    "properties": "finesse",
+    "actionCost": "action",
+    "slots": 2
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 0,
+  "ownership": { "default": 0 },
+  "flags": {}
+}

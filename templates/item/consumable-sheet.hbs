@@ -15,6 +15,13 @@
       <label>Slot-Belegung
         <input name="system.slots" type="number" min="0" value="{{system.slots}}" />
       </label>
+      <label>Verwendung
+        <select name="system.usageType">
+          <option value="self"      {{#if (eq system.usageType 'self')}}selected{{/if}}>Selbst (z.B. trinken)</option>
+          <option value="target"    {{#if (eq system.usageType 'target')}}selected{{/if}}>Auf Ziel</option>
+          <option value="throwable" {{#if (eq system.usageType 'throwable')}}selected{{/if}}>Wurfbar (AoE)</option>
+        </select>
+      </label>
     </div>
 
     <p class="loa-muted loa-mini">Stack-Limit: 10 pro Slot. Beim Verwenden wird die Anzahl um 1 reduziert; bei 0 wird das Item entfernt.</p>
@@ -26,8 +33,51 @@
           <input name="system.healFormula" type="text" value="{{system.healFormula}}" placeholder="2d4 + 2" />
         </label>
       </div>
-      <p class="loa-muted loa-mini">Wenn eine Formel eingetragen ist, würfelt das Consumable beim Verwenden und heilt den Actor.</p>
+      <p class="loa-muted loa-mini">Heilt den Anwender, wenn AoE deaktiviert ist.</p>
     </fieldset>
+
+    <fieldset class="loa-effect-fields">
+      <legend>Schaden</legend>
+      <div class="loa-field-grid">
+        <label>Schadens-Formel
+          <input name="system.damage" type="text" value="{{system.damage}}" placeholder="3d6" />
+        </label>
+        <label>Schadensart
+          <input name="system.damageType" type="text" value="{{system.damageType}}" placeholder="fire / physical / cold …" />
+        </label>
+      </div>
+      <p class="loa-muted loa-mini">Wird auf alle AoE-Targets als Pending-Damage angewendet.</p>
+    </fieldset>
+
+    <fieldset class="loa-effect-fields loa-aoe-fields">
+      <legend>Flächen-Effekt (AoE)</legend>
+      <div class="loa-field-grid">
+        <label class="loa-checkbox">
+          <input name="system.aoe.enabled" type="checkbox" {{#if system.aoe.enabled}}checked{{/if}} />
+          AoE aktiv
+        </label>
+        <label>Form
+          <select name="system.aoe.shape">
+            <option value="none"   {{#if (eq system.aoe.shape 'none')}}selected{{/if}}>—</option>
+            <option value="circle" {{#if (eq system.aoe.shape 'circle')}}selected{{/if}}>Kreis (Radius)</option>
+            <option value="cone"   {{#if (eq system.aoe.shape 'cone')}}selected{{/if}}>Kegel</option>
+          </select>
+        </label>
+        <label>Distanz / Radius
+          <input name="system.aoe.distance" type="number" min="0" step="1" value="{{system.aoe.distance}}" />
+        </label>
+        <label>Winkel (Cone)
+          <input name="system.aoe.angle" type="number" min="0" step="1" value="{{system.aoe.angle}}" />
+        </label>
+        <label>Reichweite
+          <input name="system.aoe.range" type="number" min="0" step="1" value="{{system.aoe.range}}" />
+        </label>
+      </div>
+    </fieldset>
+
+    <label>Status-Effekt für AoE-Targets
+      <input name="system.appliedStatus" type="text" value="{{system.appliedStatus}}" placeholder="z.B. invisible, stunned, prone" />
+    </label>
 
     <label>Effekt</label>
     <textarea name="system.effect">{{system.effect}}</textarea>

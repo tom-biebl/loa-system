@@ -11,6 +11,7 @@ import { SpellCastService } from "../magic/SpellCastService.js";
 import { AttackService } from "../combat/AttackService.js";
 import { AbilityUseService } from "../abilities/AbilityUseService.js";
 import { ActionEconomyService } from "../combat/ActionEconomy.js";
+import { AoEService } from "../combat/AoEService.js";
 import { normalizeActionType } from "../constants/action.constants.js";
 import type { LoAActor } from "../actors/LoAActor.js";
 
@@ -65,6 +66,9 @@ export class LoAItem extends Item {
       return;
     }
 
+    // AoE-Placement VOR Action-Cost-Verbrauch — bricht der User ab, kostet's nichts.
+    if (!(await this.runAoEIfNeeded())) return;
+
     if (!(await this.consumeActionCost(actor))) return;
     await SpellCastService.cast(actor, this);
   }
@@ -114,8 +118,22 @@ export class LoAItem extends Item {
       return;
     }
 
+    if (!(await this.runAoEIfNeeded())) return;
+
     if (!(await this.consumeActionCost(actor))) return;
     await AbilityUseService.use(actor, this);
+  }
+
+  /**
+   * Falls das Item ein aktiviertes AoE-Profil hat: Template platzieren,
+   * Targets sammeln, als User-Targets setzen. Liefert false bei Abbruch.
+   */
+  async runAoEIfNeeded(): Promise<boolean> {
+    const aoe = (this.system as { aoe?: { enabled?: boolean } }).aoe;
+    if (!aoe?.enabled) return true;
+    const result = await AoEService.placeAndCollect(aoe as any);
+    if (!result) return false;
+    return true;
   }
 
   private async consumeActionCost(actor: LoAActor): Promise<boolean> {

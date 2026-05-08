@@ -117,6 +117,14 @@
       "reactionMessage": "",
       "reactionTrigger": "before_damage_applied",
       "reactionTypeKey": "reduce_damage",
+      "aoe": {
+        "enabled": false,
+        "shape": "none",
+        "distance": 0,
+        "angle": 53,
+        "range": 0
+      },
+      "appliedStatus": "",
       "slots": 0
     },
     "ability": {
@@ -135,6 +143,14 @@
       "reactionMessage": "",
       "reactionTrigger": "before_damage_applied",
       "reactionTypeKey": "reduce_damage",
+      "aoe": {
+        "enabled": false,
+        "shape": "none",
+        "distance": 0,
+        "angle": 53,
+        "range": 0
+      },
+      "appliedStatus": "",
       "slots": 0
     },
     "consumable": {
@@ -143,6 +159,17 @@
       "effect": "",
       "healFormula": "",
       "quantity": 1,
+      "usageType": "self",
+      "damage": "",
+      "damageType": "physical",
+      "aoe": {
+        "enabled": false,
+        "shape": "none",
+        "distance": 0,
+        "angle": 53,
+        "range": 0
+      },
+      "appliedStatus": "",
       "slots": 1
     },
     "equipment": {

@@ -35,6 +35,27 @@ interface BaseItemData {
   slots: number;
 }
 
+export type AoEShape = "none" | "circle" | "cone";
+
+export interface AoEConfigData {
+  enabled: boolean;
+  shape: AoEShape;
+  /** Radius (Circle) oder Länge (Cone) in Scene-Units. */
+  distance: number;
+  /** Winkel in Grad — nur für Cone. */
+  angle: number;
+  /** Wurf- / Cast-Reichweite in Scene-Units. Nur Info. */
+  range: number;
+}
+
+interface AoECapableFields {
+  aoe: AoEConfigData;
+  /** Status-Effekt, der nach AoE-Placement auf alle Targets gelegt wird. Foundry-Status-Key (z.B. "invisible"). */
+  appliedStatus: string;
+}
+
+export type ConsumableUsageType = "self" | "target" | "throwable";
+
 interface ReactionFields {
   /** Wenn true, muss die Reaktion zuerst gegen die Pending-Damage-DC gelingen. */
   reactionRolled: boolean;
@@ -78,7 +99,8 @@ export interface ArmorSystemData extends BaseItemData {
 export interface SpellSystemData
   extends BaseItemData,
     ReactionFields,
-    DefendableFields {
+    DefendableFields,
+    AoECapableFields {
   resonanceCost: number;
   generatesResonance: boolean;
   level: number;
@@ -96,7 +118,8 @@ export interface SpellSystemData
 export interface AbilitySystemData
   extends BaseItemData,
     ReactionFields,
-    DefendableFields {
+    DefendableFields,
+    AoECapableFields {
   actionCost: ActionCost;
   effectKind: EffectKind;
   damage: string;
@@ -105,12 +128,17 @@ export interface AbilitySystemData
   cooldown: string;
 }
 
-export interface ConsumableSystemData extends BaseItemData {
+export interface ConsumableSystemData extends BaseItemData, AoECapableFields {
   uses: { value: number; max: number };
   effect: string;
   healFormula: string;
   /** Stack-Größe im Inventar. Max via `InventoryService.CONSUMABLE_MAX_STACK`. */
   quantity: number;
+  /** Wie wird das Consumable benutzt — Self-Drink / Target / Throwable. */
+  usageType: ConsumableUsageType;
+  /** Schadensformel — falls gesetzt, würfelt Schaden auf AoE-Targets bzw. das Single-Target. */
+  damage: string;
+  damageType: string;
 }
 
 export interface EquipmentSystemData extends BaseItemData {
